@@ -1,0 +1,32 @@
+{
+  "name": "wotstat-widgets-sdk",
+  "description": "SDK for WOT widgets by wotstat.info",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "MIT",
+  "author": {
+    "name": "Soprachev Andrei",
+    "email": "soprachev@wotstat.info",
+    "url": "https://wotstat.info"
+  },
+  "module": "dist/wotstat-widget-sdk.js",
+  "types": "dist/wotstat-widget-sdk.d.ts",
+  "scripts": {
+    "dev": "vite",
+    "build-lib": "vite build",
+    "test": "vitest"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/wotstat-widget-sdk.js",
+      "require": "./dist/wotstat-widget-sdk.umd.cjs"
+    }
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.0.4",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.4",
+    "vite-plugin-dts": "^4.0.0-beta.1",
+    "vitest": "^2.0.4"
+  }
+}
