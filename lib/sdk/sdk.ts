@@ -22,6 +22,7 @@ export class SDK<T extends object> {
   private websocket: WebSocket | null = null
   private _status: SDKStatus = 'connecting'
   private readonly onStatusChangeCallbacks = new Set<(status: SDKStatus) => void>()
+  private readonly onAnyChangeCallbacks = new Set<(path: string, value: any) => void>()
   private readonly dataProxy = createDeepProxy<T>()
 
   private port = 33800
@@ -41,15 +42,20 @@ export class SDK<T extends object> {
     return this.dataProxy.proxy;
   }
 
-  constructor(options: Options) {
-    this.port = options.wsPort ?? this.port
-    this.host = options.wsHost ?? this.host
+  constructor(options?: Options) {
+    this.port = options?.wsPort ?? 38200
+    this.host = options?.wsHost ?? 'localhost'
     this.reconnect()
   }
 
   onStatusChange(callback: (status: SDKStatus) => void) {
     this.onStatusChangeCallbacks.add(callback)
     return () => this.onStatusChangeCallbacks.delete(callback)
+  }
+
+  onAnyChange(callback: (path: string, value: any) => void) {
+    this.onAnyChangeCallbacks.add(callback)
+    return () => this.onAnyChangeCallbacks.delete(callback)
   }
 
   private reconnect() {
@@ -100,8 +106,10 @@ export class SDK<T extends object> {
       this.onInitMessage(msg)
     } else if (isValidChangeStateData(msg)) {
       this.dataProxy.update(msg.path, msg.value)
+      for (const iterator of this.onAnyChangeCallbacks) iterator(msg.path, msg.value)
     } else if (isValidTriggerData(msg)) {
       this.dataProxy.trigger(msg.path, msg.value)
+      for (const iterator of this.onAnyChangeCallbacks) iterator(msg.path, msg.value)
     } else {
       console.error('Unknown message type', msg)
     }

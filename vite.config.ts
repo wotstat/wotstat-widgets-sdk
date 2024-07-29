@@ -10,7 +10,8 @@ export default defineConfig({
       name: 'wotstat-widget-sdk',
       fileName: 'wotstat-widget-sdk'
     },
-    minify: 'esbuild'
+    sourcemap: true,
+    minify: 'esbuild',
   },
   plugins: [
     dts({ rollupTypes: true })
