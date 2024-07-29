@@ -3,10 +3,11 @@ export type WatchStateCallback<T> = (value: T, old: T) => void
 export type WatchState<T> = (callback: WatchStateCallback<T>) => (() => void)
 
 export type State<T> = {
-  value: () => T | undefined,
+  value: T | undefined,
   watch: WatchState<T>
 }
 
+export type WatchTriggerCallback<T> = (value: T) => void
 export type WatchTrigger<T> = (callback: (value: T) => void) => (() => void)
 
 export type Trigger<T> = {
@@ -20,12 +21,12 @@ export type DeepProxy<T> = {
 export function createDeepProxy<T extends object>(initial: Map<string, any> = new Map()) {
 
   const keyValue = new Map<string, any>(initial)
-  const listeners = new Map<string, Set<WatchStateCallback<any>>>()
+  const listeners = new Map<string, Set<WatchStateCallback<any> | WatchTriggerCallback<any>>>()
 
   function makeHandler(path: string): ProxyHandler<T> {
     return {
       get(target, p, receiver) {
-        if (p === 'value') return () => keyValue.get(path)
+        if (p === 'value') return keyValue.get(path)
         if (p === 'watch') return ((callback: WatchStateCallback<T>) => {
           if (listeners.has(path)) listeners.get(path)!.add(callback)
           else listeners.set(path, new Set([callback]))
@@ -51,7 +52,7 @@ export function createDeepProxy<T extends object>(initial: Map<string, any> = ne
     if (!callbacks) return
 
     for (const iterator of callbacks) {
-      iterator(value, oldValue)
+      (iterator as WatchStateCallback<any>)(value, oldValue)
     }
   }
 
@@ -61,10 +62,27 @@ export function createDeepProxy<T extends object>(initial: Map<string, any> = ne
     if (!callbacks) return
 
     for (const iterator of callbacks) {
-      iterator(value, value)
+      (iterator as WatchTriggerCallback<any>)(value)
     }
 
   }
 
-  return { proxy: new Proxy({}, makeHandler('')) as DeepProxy<T>, update, trigger }
+  function resetup(initial: Map<string, any> = new Map()) {
+    for (const [key, value] of keyValue.entries()) {
+      if (!initial.has(key)) {
+        update(key, undefined)
+      } else {
+        update(key, initial.get(key))
+      }
+    }
+
+    for (const [key, value] of initial.entries()) {
+      if (!keyValue.has(key)) {
+        update(key, value)
+      }
+    }
+  }
+
+
+  return { proxy: new Proxy({}, makeHandler('')) as DeepProxy<T>, update, trigger, resetup }
 }

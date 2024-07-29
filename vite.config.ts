@@ -16,6 +16,6 @@ export default defineConfig({
     dts({ rollupTypes: true })
   ],
   test: {
-    environment: 'node'
+    environment: 'jsdom'
   }
 })

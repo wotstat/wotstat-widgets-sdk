@@ -1,6 +1,7 @@
 
 import { ChangeStateMessage, InitMessage, TriggerMessage } from "./types";
 
+
 export function isValidInitData(data: unknown): data is InitMessage {
 
   if (typeof data !== 'object') return false;
@@ -19,7 +20,6 @@ export function isValidChangeStateData(data: unknown): data is ChangeStateMessag
   if (!('type' in data)) return false;
   if (data.type !== 'state') return false;
   if (!('path' in data)) return false;
-  if (!Array.isArray(data.path)) return false;
   if (!('value' in data)) return false;
 
   return true;
@@ -31,7 +31,6 @@ export function isValidTriggerData(data: unknown): data is TriggerMessage {
   if (!('type' in data)) return false;
   if (data.type !== 'trigger') return false;
   if (!('path' in data)) return false;
-  if (!Array.isArray(data.path)) return false;
 
   return true;
 }

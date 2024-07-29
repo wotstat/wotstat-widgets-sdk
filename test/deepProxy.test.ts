@@ -46,17 +46,17 @@ describe('deepProxy', () => {
 
     const { proxy, update } = createDeepProxy<Test>()
 
-    expect(proxy.a.b.c.value()).toBe(undefined)
+    expect(proxy.a.b.c.value).toBe(undefined)
 
     update('a.b.c', 1)
-    expect(proxy.a.b.c.value()).toBe(1)
+    expect(proxy.a.b.c.value).toBe(1)
 
     update('a.b.c', 2)
-    expect(proxy.a.b.c.value()).toBe(2)
+    expect(proxy.a.b.c.value).toBe(2)
 
 
     update('a.b.d', 2)
-    expect(proxy.a.b.c.value()).toBe(2)
+    expect(proxy.a.b.c.value).toBe(2)
   })
 
   it('initial', () => {
@@ -64,10 +64,10 @@ describe('deepProxy', () => {
 
     const { proxy, update } = createDeepProxy<Test>(new Map([['a.b.c', 1]]))
 
-    expect(proxy.a.b.c.value()).toBe(1)
+    expect(proxy.a.b.c.value).toBe(1)
 
     update('a.b.c', 2)
-    expect(proxy.a.b.c.value()).toBe(2)
+    expect(proxy.a.b.c.value).toBe(2)
   })
 
   it('watch trigger', () => {
