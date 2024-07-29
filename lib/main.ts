@@ -1,4 +1,4 @@
 
-import { WidgetsSDK } from "./sdk";
+import { SDK } from "./sdk/sdk";
 
-export { WidgetsSDK }; 
+export { SDK as WidgetSDK }; 
