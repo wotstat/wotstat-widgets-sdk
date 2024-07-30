@@ -1,9 +1,10 @@
-import { beforeEach, afterEach, expect, describe, it, vi } from 'vitest';
+import { beforeEach, afterEach, expect, describe, it, vi } from 'vitest'
 import { WebSocketServer } from 'ws'
 import { SDK } from '../lib/sdk/sdk'
-import { State, Trigger } from '../lib/utils/deepProxy';
+import { State, Trigger } from '../lib/utils/deepProxy'
+import { WidgetsSdkData } from '../lib/sdk/dataTypes'
 
-type Data = {
+type Data = WidgetsSdkData & {
   a: {
     b: {
       c: State<{ d: number }>,
@@ -127,7 +128,7 @@ describe<Context>('Messages', ctx => {
 
   })
 
-});
+})
 
 describe('Init', () => {
 

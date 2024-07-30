@@ -1,6 +1,6 @@
-import { beforeEach, expect, describe, it, assert } from 'vitest';
+import { expect, describe, it } from 'vitest'
 
-import { createDeepProxy, type State, type Trigger, type WatchStateCallback } from "../lib/utils/deepProxy";
+import { createDeepProxy, type State, type Trigger } from "../lib/utils/deepProxy"
 
 
 describe('deepProxy', () => {

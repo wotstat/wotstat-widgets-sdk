@@ -1,28 +1,30 @@
-import { createDeepProxy } from "../utils/deepProxy";
-import { InitMessage } from "./types";
-import { isValidChangeStateData, isValidInitData, isValidTriggerData } from "./utils";
+import { createDeepProxy } from "../utils/deepProxy"
+import { InitMessage } from "./types"
+import { isValidChangeStateData, isValidInitData, isValidTriggerData } from "./utils"
+import { WidgetsSdkData } from './dataTypes'
 
 export type SDKStatus = 'connecting' | 'ready'
 
 export type Options = Partial<{
-  wsHost: string;
-  wsPort: number;
+  wsHost: string
+  wsPort: number
 }>
 
 
 function tryParseJson(message: string): unknown {
   try {
-    return JSON.parse(message);
+    return JSON.parse(message)
   } catch (error) {
-    return null;
+    return null
   }
 }
 
-export class SDK<T extends object> {
+export class SDK<T extends WidgetsSdkData> {
   private websocket: WebSocket | null = null
   private _status: SDKStatus = 'connecting'
   private readonly onStatusChangeCallbacks = new Set<(status: SDKStatus) => void>()
   private readonly onAnyChangeCallbacks = new Set<(path: string, value: any) => void>()
+  private readonly onAnyTriggerCallbacks = new Set<(path: string, value: any) => void>()
   private readonly dataProxy = createDeepProxy<T>()
 
   private port = 33800
@@ -39,7 +41,7 @@ export class SDK<T extends object> {
   }
 
   get data() {
-    return this.dataProxy.proxy;
+    return this.dataProxy.proxy
   }
 
   constructor(options?: Options) {
@@ -56,6 +58,11 @@ export class SDK<T extends object> {
   onAnyChange(callback: (path: string, value: any) => void) {
     this.onAnyChangeCallbacks.add(callback)
     return () => this.onAnyChangeCallbacks.delete(callback)
+  }
+
+  onAnyTrigger(callback: (path: string, value: any) => void) {
+    this.onAnyTriggerCallbacks.add(callback)
+    return () => this.onAnyTriggerCallbacks.delete(callback)
   }
 
   private reconnect() {
@@ -80,7 +87,7 @@ export class SDK<T extends object> {
   }
 
   private onInitMessage(msg: InitMessage) {
-    const initial = new Map<string, any>(msg.states.map(({ path, value }) => [path, value]));
+    const initial = new Map<string, any>(msg.states.map(({ path, value }) => [path, value]))
     this.dataProxy.resetup(initial)
     this.status = 'ready'
   }
@@ -90,12 +97,12 @@ export class SDK<T extends object> {
 
   private onClose = (event: CloseEvent) => {
     this.status = 'connecting'
-    setTimeout(() => { this.reconnect() }, 300);
+    setTimeout(() => { this.reconnect() }, 300)
   }
 
   private onError = () => {
     this.status = 'connecting'
-    setTimeout(() => { this.reconnect() }, 300);
+    setTimeout(() => { this.reconnect() }, 300)
   }
 
   private onMessage = (event: MessageEvent) => {
@@ -109,7 +116,7 @@ export class SDK<T extends object> {
       for (const iterator of this.onAnyChangeCallbacks) iterator(msg.path, msg.value)
     } else if (isValidTriggerData(msg)) {
       this.dataProxy.trigger(msg.path, msg.value)
-      for (const iterator of this.onAnyChangeCallbacks) iterator(msg.path, msg.value)
+      for (const iterator of this.onAnyTriggerCallbacks) iterator(msg.path, msg.value)
     } else {
       console.error('Unknown message type', msg)
     }

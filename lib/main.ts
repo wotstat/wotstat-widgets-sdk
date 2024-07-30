@@ -1,4 +1,6 @@
+import style from './style.scss?inline'
 
-import { SDK } from "./sdk/sdk";
+document.head.insertAdjacentHTML("beforeend", `<style>${style}</style>`)
 
-export { SDK as WidgetSDK }; 
+export { SDK as WidgetSDK } from "./sdk/sdk"
+export type { State, Trigger } from "./utils/deepProxy"

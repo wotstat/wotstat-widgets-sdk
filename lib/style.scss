@@ -1,0 +1,46 @@
+:root {
+  --wotstat-background: #292929;
+  --wotstat-accent: #4ee100;
+  --wotstat-primary: #ffffff;
+  --wotstat-secondary: #c4c4c4;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.wotstat-background {
+  background-color: var(--wotstat-background);
+}
+
+.wotstat-accent {
+  color: var(--wotstat-accent);
+}
+
+.wotstat-primary {
+  color: var(--wotstat-primary);
+}
+
+.wotstat-secondary {
+  color: var(--wotstat-secondary);
+}
+
+.wotstat-number {
+  text-wrap: none;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.wotstat-autoscale {
+  font-size: 5vw;
+}
+
+.wotstat-card {
+  background-color: var(--wotstat-background);
+  color: white;
+  margin: 0;
+  padding: 0.7em;
+  border-radius: 0.5em;
+}
