@@ -8,36 +8,49 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: Arial, sans-serif;
 }
 
-.wotstat-background {
+@mixin lib-style($class-name) {
+  .wotstat-#{$class-name} {
+    @content;
+  }
+
+  .widgets-sdk-styles {
+    .#{$class-name} {
+      @content;
+    }
+  }
+}
+
+
+@include lib-style('background') {
   background-color: var(--wotstat-background);
 }
 
-.wotstat-accent {
+@include lib-style('accent') {
   color: var(--wotstat-accent);
 }
 
-.wotstat-primary {
+@include lib-style('primary') {
   color: var(--wotstat-primary);
 }
 
-.wotstat-secondary {
+@include lib-style('secondary') {
   color: var(--wotstat-secondary);
 }
 
-.wotstat-number {
+@include lib-style('number') {
   text-wrap: none;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
-.wotstat-autoscale {
+@include lib-style('autoscale') {
   font-size: 5vw;
 }
 
-.wotstat-card {
+@include lib-style('card') {
   background-color: var(--wotstat-background);
   color: white;
   margin: 0;

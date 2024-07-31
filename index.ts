@@ -4,7 +4,9 @@ import { WidgetSDK } from "./lib/main"
 // console.log("WidgetSDK loaded");
 
 
-const widget = new WidgetSDK()
+const widget = new WidgetSDK({
+  connect: false
+})
 
 // const app = document.getElementById("app")
 

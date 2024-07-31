@@ -2,10 +2,13 @@ import { createDeepProxy } from "../utils/deepProxy"
 import { InitMessage } from "./types"
 import { isValidChangeStateData, isValidInitData, isValidTriggerData } from "./utils"
 import { WidgetsSdkData } from './dataTypes'
+import { setup as setupStyle } from "./style";
 
 export type SDKStatus = 'connecting' | 'ready'
 
 export type Options = Partial<{
+  connect: boolean
+  style: boolean
   wsHost: string
   wsPort: number
 }>
@@ -47,7 +50,8 @@ export class SDK<T extends WidgetsSdkData> {
   constructor(options?: Options) {
     this.port = options?.wsPort ?? 38200
     this.host = options?.wsHost ?? 'localhost'
-    this.reconnect()
+    if (options?.connect !== false) this.reconnect()
+    if (options?.style !== false) setupStyle()
   }
 
   onStatusChange(callback: (status: SDKStatus) => void) {
