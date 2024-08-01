@@ -82,7 +82,6 @@ export class SDK<T extends WidgetsSdkData> {
     }
 
     this.status = 'connecting'
-
     this.websocket = new WebSocket(`ws://${this.host}:${this.port}`)
     this.websocket.addEventListener('message', this.onMessage)
     this.websocket.addEventListener('open', this.onOpen)
@@ -96,18 +95,13 @@ export class SDK<T extends WidgetsSdkData> {
     this.status = 'ready'
   }
 
-  private onOpen = () => {
-  }
+  private onOpen = () => { }
 
   private onClose = (event: CloseEvent) => {
-    this.status = 'connecting'
-    setTimeout(() => { this.reconnect() }, 300)
+    this.reconnect()
   }
 
-  private onError = () => {
-    this.status = 'connecting'
-    setTimeout(() => { this.reconnect() }, 300)
-  }
+  private onError = () => { }
 
   private onMessage = (event: MessageEvent) => {
     const msg = tryParseJson(event.data)
