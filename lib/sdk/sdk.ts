@@ -54,6 +54,11 @@ export class SDK<T extends WidgetsSdkData> {
     if (options?.style !== false) setupStyle()
   }
 
+  dispose() {
+    this.closeConnection()
+    this.websocket = null
+  }
+
   onStatusChange(callback: (status: SDKStatus) => void) {
     this.onStatusChangeCallbacks.add(callback)
     return () => this.onStatusChangeCallbacks.delete(callback)
@@ -69,17 +74,18 @@ export class SDK<T extends WidgetsSdkData> {
     return () => this.onAnyTriggerCallbacks.delete(callback)
   }
 
-  private reconnect() {
+  private closeConnection() {
     if (this.websocket !== null) {
-      if (this.websocket.readyState === WebSocket.OPEN) {
-        this.websocket.close()
-      }
-
       this.websocket.removeEventListener('message', this.onMessage)
       this.websocket.removeEventListener('open', this.onOpen)
       this.websocket.removeEventListener('close', this.onClose)
       this.websocket.removeEventListener('error', this.onError)
+      this.websocket.close()
     }
+  }
+
+  private reconnect() {
+    this.closeConnection()
 
     this.status = 'connecting'
     this.websocket = new WebSocket(`ws://${this.host}:${this.port}`)
