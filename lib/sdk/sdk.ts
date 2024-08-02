@@ -3,6 +3,7 @@ import { InitMessage } from "./types"
 import { isValidChangeStateData, isValidInitData, isValidTriggerData } from "./utils"
 import { WidgetsSdkData } from './dataTypes'
 import { setup as setupStyle } from "./style";
+import { DataProviderEmulator } from "./emulator";
 
 export type SDKStatus = 'connecting' | 'ready'
 
@@ -52,6 +53,17 @@ export class SDK<T extends WidgetsSdkData> {
     this.host = options?.wsHost ?? 'localhost'
     if (options?.connect !== false) this.reconnect()
     if (options?.style !== false) setupStyle()
+
+    const emulator = new DataProviderEmulator(this,
+      (msg) => {
+        const event = new MessageEvent('message', { data: JSON.stringify(msg) })
+        this.onMessage(event)
+      },
+      () => this.closeConnection(),
+      () => { this.status = 'connecting' })
+
+    // @ts-ignore
+    window.wotstatEmulator = emulator.api
   }
 
   dispose() {
@@ -77,9 +89,7 @@ export class SDK<T extends WidgetsSdkData> {
   private closeConnection() {
     if (this.websocket !== null) {
       this.websocket.removeEventListener('message', this.onMessage)
-      this.websocket.removeEventListener('open', this.onOpen)
       this.websocket.removeEventListener('close', this.onClose)
-      this.websocket.removeEventListener('error', this.onError)
       this.websocket.close()
     }
   }
@@ -90,9 +100,7 @@ export class SDK<T extends WidgetsSdkData> {
     this.status = 'connecting'
     this.websocket = new WebSocket(`ws://${this.host}:${this.port}`)
     this.websocket.addEventListener('message', this.onMessage)
-    this.websocket.addEventListener('open', this.onOpen)
     this.websocket.addEventListener('close', this.onClose)
-    this.websocket.addEventListener('error', this.onError)
   }
 
   private onInitMessage(msg: InitMessage) {
@@ -101,13 +109,9 @@ export class SDK<T extends WidgetsSdkData> {
     this.status = 'ready'
   }
 
-  private onOpen = () => { }
-
   private onClose = (event: CloseEvent) => {
     this.reconnect()
   }
-
-  private onError = () => { }
 
   private onMessage = (event: MessageEvent) => {
     const msg = tryParseJson(event.data)
