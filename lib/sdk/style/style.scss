@@ -11,6 +11,19 @@ body {
   font-family: Arial, sans-serif;
 }
 
+
+
+.widgets-sdk-styles {
+  hr {
+    margin: 0.5em 0;
+    border: 0;
+    height: 0.05em;
+    background: var(--wotstat-secondary);
+    border-radius: 1em;
+    opacity: 0.4;
+  }
+}
+
 @mixin lib-style($class-name) {
   .wotstat-#{$class-name} {
     @content;
@@ -47,7 +60,7 @@ body {
 }
 
 @include lib-style('autoscale') {
-  font-size: 5vw;
+  font-size: 4vw;
 }
 
 @include lib-style('card') {
@@ -55,5 +68,5 @@ body {
   color: var(--wotstat-primary);
   margin: 0;
   padding: 1em;
-  border-radius: 0.8em;
+  border-radius: 1em;
 }

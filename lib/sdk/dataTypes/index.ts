@@ -7,6 +7,29 @@ type Vector3 = {
   z: number
 }
 
+type Vehicle = {
+  tag: string
+  localizedName: string
+  localizedShortName: string
+  level: number
+  class: string
+  role: string
+}
+
+type Skill = {
+  tag: string
+  level: number
+}
+
+type Tankman = {
+  order: number
+  efficiencyRoleLevel: number
+  vehicleTag: string
+  roles: string[]
+  slills: Skill[]
+  isFemale: boolean
+}
+
 export interface WidgetsSdkData {
   keyboard: {
     onAnyKey: Trigger<{
@@ -19,6 +42,35 @@ export interface WidgetsSdkData {
     language: State<string>
     region: State<string>
     version: State<string>
+    server: State<string>
+  }
+
+  gameState: State<'loading' | 'hangar' | 'queue' | 'prebattle' | 'battle'>
+
+  player: {
+    name: State<string>
+    id: State<number>
+  }
+
+  account: {
+    isPremium: State<boolean>
+    battlesCount: State<number>
+  }
+
+  hangar: {
+    vehicle: {
+      info: State<Vehicle>
+      crew: State<Tankman[]>
+      optDevices: State<{
+        tag: string | null
+        specialization: string | null
+      }[]>,
+      shells: State<{ tag: string, count: number }[]>
+      consumables: State<(string | null)[]>
+      boosters: State<(string | null)[]>
+      isBroken: State<boolean>
+      isInBattle: State<boolean>
+    }
   }
 
   battle: {
@@ -43,18 +95,6 @@ export interface WidgetsSdkData {
     maxHealth: State<number>
     onResult: Trigger<unknown>
   }
-
-  player: {
-    name: State<string>
-    id: State<number>
-  }
-
-  account: {
-    isPremium: State<boolean>
-    battlesCount: State<number>
-  }
-
-  gameState: State<'loading' | 'hangar' | 'queue' | 'prebattle' | 'battle'>
 
   extensions: WidgetsSdkExtensions
   registeredExtensions: State<string[]>
