@@ -22,11 +22,10 @@ type Skill = {
 }
 
 type Tankman = {
-  order: number
   efficiencyRoleLevel: number
   vehicleTag: string
   roles: string[]
-  slills: Skill[]
+  skills: Skill[]
   isFemale: boolean
 }
 
@@ -50,16 +49,42 @@ export interface WidgetsSdkData {
   player: {
     name: State<string>
     id: State<number>
+    clanId: State<number>
+    clanTag: State<string>
   }
 
   account: {
-    isPremium: State<boolean>
-    battlesCount: State<number>
+    credits: State<number>
+    gold: State<number>
+    crystal: State<number>
+    freeXp: State<number>
+    premium: State<{
+      basic: { active: boolean, expiration: number }
+      plus: { active: boolean, expiration: number }
+      vip: { active: boolean, expiration: number }
+    }>
+  }
+
+  platoon: {
+    isInPlatoon: State<boolean>
+    maxSlots: State<number>
+    commander: State<number>
+    slots: State<({
+      name: string
+      clanTag: string
+      dbid: number
+      rating: number
+      timeJoin: number
+      isOffline: boolean
+      vehicle: Vehicle | null
+      isReady: boolean
+    } | null)[]>
   }
 
   hangar: {
     vehicle: {
       info: State<Vehicle>
+      xp: State<number>
       crew: State<Tankman[]>
       optDevices: State<{
         tag: string | null
@@ -70,6 +95,15 @@ export interface WidgetsSdkData {
       boosters: State<(string | null)[]>
       isBroken: State<boolean>
       isInBattle: State<boolean>
+      postProgression: State<{
+        level: number
+        features: {
+          optSwitchEnabled: boolean,
+          shellsSwitchEnabled: boolean,
+        }
+        unlockedModifications: string[]
+        selectedModifications: string[]
+      }>
     }
   }
 
