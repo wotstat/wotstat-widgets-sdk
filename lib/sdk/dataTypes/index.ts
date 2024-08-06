@@ -29,6 +29,12 @@ type Tankman = {
   isFemale: boolean
 }
 
+type VehicleWithOwner = Vehicle & {
+  playerName: string
+  playerId: number
+  team: number
+}
+
 export interface WidgetsSdkData {
   keyboard: {
     onAnyKey: Trigger<{
@@ -42,9 +48,9 @@ export interface WidgetsSdkData {
     region: State<string>
     version: State<string>
     server: State<string>
+    state: State<'loading' | 'login' | 'hangar' | 'battle'>
+    serverTime: State<number>
   }
-
-  gameState: State<'loading' | 'hangar' | 'queue' | 'prebattle' | 'battle'>
 
   player: {
     name: State<string>
@@ -82,6 +88,11 @@ export interface WidgetsSdkData {
   }
 
   hangar: {
+    isInHangar: State<boolean>
+    battleMode: State<string>
+    isInQueue: State<boolean>
+    onEnqueue: Trigger<null>
+    onDequeue: Trigger<null>
     vehicle: {
       info: State<Vehicle>
       xp: State<number>
@@ -108,8 +119,13 @@ export interface WidgetsSdkData {
   }
 
   battle: {
-    onBattleStart: Trigger<null>
-    state: State<'loading' | 'prebattle' | 'battle' | 'postbattle'>
+    isInBattle: State<boolean>
+    period: State<{
+      tag: string
+      endTime: number
+      length: number
+    }>
+
     arenaId: State<number>
     arena: State<{
       tag: string
@@ -117,17 +133,29 @@ export interface WidgetsSdkData {
       gameplay: string
       team: number
     }>
-    vehicle: State<{
-      tag: string
-      localizedName: string
-      tier: number
-      type: string
-      role: string
-    }>
-    position: State<Vector3>
+    vehicle: State<Vehicle>
     health: State<number>
     maxHealth: State<number>
-    onResult: Trigger<unknown>
+
+    position: State<Vector3>
+    // onBattleResult: Trigger<unknown> 
+    onDamage: Trigger<{
+      target: VehicleWithOwner | null,
+      attacker: VehicleWithOwner | null,
+      damage: number,
+      health: number,
+      source: number
+    }>
+
+    teamBases: State<{
+      [key: string]: {
+        baseID: number
+        points: number
+        timeLeft: number
+        invadersCount: number
+        capturingStopped: boolean
+      }[]
+    }>
   }
 
   extensions: WidgetsSdkExtensions

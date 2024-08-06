@@ -37,7 +37,9 @@ export function createDeepProxy<T extends object>(initial: Map<string, any> = ne
           }
         }) as WatchState<T>
 
-        return new Proxy({}, makeHandler(path == '' ? p.toString() : `${path}.${p.toString()}`))
+
+        const nextPath = path == '' ? p.toString() : `${path}.${p.toString()}`
+        return new Proxy({}, makeHandler(nextPath))
       },
     }
   }
@@ -83,6 +85,7 @@ export function createDeepProxy<T extends object>(initial: Map<string, any> = ne
     }
   }
 
-
-  return { proxy: new Proxy({}, makeHandler('')) as DeepProxy<T>, update, trigger, resetup }
+  return {
+    proxy: new Proxy(keyValue as any, makeHandler('')) as DeepProxy<T>, update, trigger, resetup
+  }
 }
