@@ -1,11 +1,9 @@
 import { State, Trigger } from "../../utils/deepProxy"
 import { KeyCodes } from "./keycodes"
+import { PlayerFeedback } from "./playerFeedbacks"
 
-type Vector3 = {
-  x: number
-  y: number
-  z: number
-}
+type Vector3 = [x: number, y: number, z: number]
+type Rotation = [pitch: number, yaw: number, roll: number]
 
 type Vehicle = {
   tag: string
@@ -29,7 +27,7 @@ type Tankman = {
   isFemale: boolean
 }
 
-type VehicleWithOwner = Vehicle & {
+export type VehicleWithOwner = Vehicle & {
   playerName: string
   playerId: number
   team: number
@@ -50,6 +48,9 @@ export interface WidgetsSdkData {
     server: State<string>
     state: State<'loading' | 'login' | 'hangar' | 'battle'>
     serverTime: State<number>
+    fps: State<number>
+    ping: State<number>
+    isInReplay: State<boolean>
   }
 
   player: {
@@ -136,16 +137,29 @@ export interface WidgetsSdkData {
     vehicle: State<Vehicle>
     health: State<number>
     maxHealth: State<number>
+    isAlive: State<boolean>
 
     position: State<Vector3>
-    // onBattleResult: Trigger<unknown> 
-    onDamage: Trigger<{
-      target: VehicleWithOwner | null,
-      attacker: VehicleWithOwner | null,
-      damage: number,
-      health: number,
-      source: number
-    }>
+    rotation: State<Rotation>
+    velocity: State<[linear: number, angular: number]>
+    turretYaw: State<number>
+    turretRotationSpeed: State<number>
+    gunPitch: State<number>
+
+    aiming: {
+      isAutoAim: State<boolean>
+      isServerAim: State<boolean>
+      idealDispersion: State<number>
+      serverDispersion: State<number>
+      clientDispersion: State<number>
+    }
+
+    efficiency: {
+      damage: State<number>
+      assist: State<number>
+      blocked: State<number>
+      stun: State<number>
+    }
 
     teamBases: State<{
       [key: string]: {
@@ -156,6 +170,18 @@ export interface WidgetsSdkData {
         capturingStopped: boolean
       }[]
     }>
+
+    // onBattleResult: Trigger<unknown> 
+    onDamage: Trigger<{
+      target: VehicleWithOwner | null,
+      attacker: VehicleWithOwner | null,
+      damage: number,
+      health: number,
+      source: number
+    }>
+
+    onPlayerFeedback: Trigger<PlayerFeedback>
+
   }
 
   extensions: WidgetsSdkExtensions
