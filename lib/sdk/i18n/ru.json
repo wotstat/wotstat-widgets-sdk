@@ -1,0 +1,13 @@
+{
+  "shortShellNames": {
+    "HOLLOW_CHARGE": "КС",
+    "ARMOR_PIERCING": "ББ",
+    "ARMOR_PIERCING_HE": "ОФ",
+    "ARMOR_PIERCING_CR": "БП",
+    "SMOKE": "Дым",
+    "HE_MODERN": "ОФ",
+    "HE_LEGACY_STUN": "ОФ",
+    "HE_LEGACY_NO_STUN": "ОФ",
+    "FLAME": "Огонь"
+  }
+}

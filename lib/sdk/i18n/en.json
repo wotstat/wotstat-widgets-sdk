@@ -1,0 +1,13 @@
+{
+  "shortShellNames": {
+    "HOLLOW_CHARGE": "HEAT",
+    "ARMOR_PIERCING": "AP",
+    "ARMOR_PIERCING_HE": "HE",
+    "ARMOR_PIERCING_CR": "APCR",
+    "SMOKE": "SMOKE",
+    "HE_MODERN": "HE",
+    "HE_LEGACY_STUN": "HE",
+    "HE_LEGACY_NO_STUN": "HE",
+    "FLAME": "FLAME"
+  }
+}
