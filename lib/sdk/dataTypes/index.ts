@@ -51,6 +51,7 @@ export interface WidgetsSdkData {
     fps: State<number>
     ping: State<number>
     isInReplay: State<boolean>
+    dataProviderVersion: State<number>
   }
 
   player: {
@@ -171,7 +172,6 @@ export interface WidgetsSdkData {
       }[]
     }>
 
-    // onBattleResult: Trigger<unknown> 
     onDamage: Trigger<{
       target: VehicleWithOwner | null,
       attacker: VehicleWithOwner | null,
@@ -181,7 +181,7 @@ export interface WidgetsSdkData {
     }>
 
     onPlayerFeedback: Trigger<PlayerFeedback>
-
+    onBattleResult: Trigger<unknown>
   }
 
   extensions: WidgetsSdkExtensions
