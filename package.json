@@ -3,6 +3,10 @@
   "description": "SDK for WOT widgets by wotstat.info",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/WOT-STAT/wotstat-widgets-sdk"
+  },
   "author": {
     "name": "Soprachev Andrei",
     "email": "soprachev@wotstat.info",
