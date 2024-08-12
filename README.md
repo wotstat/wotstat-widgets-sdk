@@ -1,0 +1,1 @@
+# wotstat-widget-sdk

@@ -1,0 +1,28 @@
+name: Publish to NPM
+
+on:
+  push:
+    tags:
+      - '*.*.*'  # Matches version tags like 1.0.0, 1.2.3, etc.
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build the library
+        run: bun run build-lib
+
+      - name: Publish to NPM
+        run: npm publish --access public --tag $(git describe --tags)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
