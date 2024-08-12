@@ -1,7 +1,6 @@
 {
   "name": "wotstat-widgets-sdk",
   "description": "SDK for WOT widgets by wotstat.info",
-  "version": "0.0.1",
   "type": "module",
   "license": "MIT",
   "author": {
