@@ -3,7 +3,7 @@ name: Publish to NPM
 on:
   push:
     tags:
-      - '*.*.*'  # Matches version tags like 1.0.0, 1.2.3, etc.
+      - 'v*.*.*'
 
 jobs:
   build-and-publish:
@@ -23,6 +23,9 @@ jobs:
         run: bun run build-lib
 
       - name: Publish to NPM
-        run: npm publish --access public --tag $(git describe --tags)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          TAG_VERSION=$(echo ${GITHUB_REF#refs/tags/})
+          npm version $TAG_VERSION --no-git-tag-version
+          npm publish --tag $TAG_VERSION
