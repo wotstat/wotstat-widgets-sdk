@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World</title>
+</head>
+
+<body>
+  <script src="https://unpkg.com/wotstat-widgets-sdk"></script>
+  <script type="module">
+    const { WidgetSDK, WidgetMetaTags } = WotstatWidgetsSdk
+
+    WidgetMetaTags.enableAutoHeight()
+    const sdk = new WidgetSDK()
+
+    sdk.onStatusChange(status => document.getElementById('status').innerText = `Status: ${status}`)
+  </script>
+
+  <div class="widgets-sdk-styles">
+    <div class="autoscale">
+      <div class="card">
+        <p class="primary">Hello <span class="accent">Widgets!</span></p>
+        <p id="status"></p>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

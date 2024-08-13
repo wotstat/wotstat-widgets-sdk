@@ -58,4 +58,11 @@ SDK добавляет несколько классов для стилизац
 - Используйте переменные для указания цветов фона и акцента.
 
 ```html
+<div class="widgets-sdk-styles">
+  <div class="autoscale">
+    <div class="card">
+      <p class="primary">Hello <span class="accent">Widgets!</span></p>
+    </div>
+  </div>
+</div>
 ```

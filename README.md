@@ -24,10 +24,14 @@ JavaScript библиотека для создания веб-виджетов 
 npm i wotstat-widgets-sdk
 ```
 
+> РЕКОМЕНДУЕТЯ  
+> SDK предоставляет полную поддержку типов, что позволяет сильно упростить разработку виджетов.
+
 С помощью CDN:
 ```html
 <script src="https://unpkg.com/wotstat-widgets-sdk"></script>
 ```
+После чего, будет объявлен глобальный объект `WotstatWidgetsSdk`.
 
 ## Использование
 
@@ -55,6 +59,8 @@ sdk.data.battle.onBattleResult.watch(result => {
   console.log('Battle result:', result)
 })
 ```
+
+Больше примеров можно найти тут: [examples](./examples)
 
 ### DataProvider
 Для связи с модом `wotstat-data-provider` SDK предоставляет объект `data`, внутри него иерархическая структура данных, у которой на определённом уровне встречается `State` (состояние) или `Trigger` (событие).
