@@ -1,4 +1,4 @@
-name: Publish to NPM
+name: Test and Build
 
 on:
   push:
@@ -26,6 +26,9 @@ jobs:
 
       - name: Install dependencies
         run: bun install
+
+      - name: Run tests
+        run: bun run test
 
       - name: Build the library
         run: bun run build-lib

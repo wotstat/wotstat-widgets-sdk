@@ -1,45 +1,36 @@
-# wotstat-widget-sdk
+# wotstat-widgets-sdk
+[![npm package][npm-img]][npm-url]
+[![Downloads][downloads-img]][downloads-url]
+[![Build Status][build-img]][build-url]
+
+[npm-img]: https://img.shields.io/npm/v/wotstat-widgets-sdk
+[npm-url]: https://www.npmjs.com/package/wotstat-widgets-sdk
+[build-img]: https://github.com/WOT-STAT/wotstat-widgets-sdk/actions/workflows/publish.yml/badge.svg
+[build-url]: https://github.com/WOT-STAT/wotstat-widgets-sdk/actions/workflows/publish.yml
+[downloads-img]: https://img.shields.io/npm/dt/wotstat-widgets-sdk
+[downloads-url]: https://www.npmtrends.com/wotstat-widgets-sdk
+
+
 JavaScript библиотека для создания веб-виджетов и связи с `wotstat-data-provider` модом.
 
 ![schema](.github/widgets-sdk.png)
 
-> [!IMPORTANT]
 > Для работы SDK необходим мод [wotstat-data-provider](https://github.com/WOT-STAT/data-provider) или [wotstat-widgets](https://github.com/WOT-STAT/wotstat-widgets)
 
 ## Установка
 
 С помощью npm:
 ```bash
-npm i wotstat-widget-sdk
+npm i wotstat-widgets-sdk
 ```
 
 С помощью CDN:
 ```html
-<script src="https://cdn.jsdelivr.net/npm/wotstat-widget-sdk/dist/wotstat-widget-sdk.js"></script>
+<script src="https://unpkg.com/wotstat-widgets-sdk"></script>
 ```
 
 ## Использование
 
-### DataProvider
-Для связи с модом `wotstat-data-provider` SDK предоставляет объект `data`, внутри него иерархическая структура данных, у которой на определённом уровне встречается `State` (состояние) или `Trigger` (событие).
-
-Часть `data`:
-```ts
-{
-  hangar: {
-    vehicle: {
-      info: {
-        value: State<...>
-      }
-    }
-  },
-  battle: {
-    onBattleResult: Trigger<...>
-  }
-}
-```
-
-#### Рабочий пример
 ```js
 import { WidgetSDK } from 'wotstat-widget-sdk'
 
@@ -65,6 +56,25 @@ sdk.data.battle.onBattleResult.watch(result => {
 })
 ```
 
+### DataProvider
+Для связи с модом `wotstat-data-provider` SDK предоставляет объект `data`, внутри него иерархическая структура данных, у которой на определённом уровне встречается `State` (состояние) или `Trigger` (событие).
+
+Часть `data`:
+```ts
+{
+  hangar: {
+    vehicle: {
+      info: {
+        value: State<...>
+      }
+    }
+  },
+  battle: {
+    onBattleResult: Trigger<...>
+  }
+}
+```
+
 Более подробная информация в [документации](./docs/api.md).
 
 ### Стили
@@ -75,7 +85,6 @@ SDK предоставляет некоторые стандартные сти�
 
 Стили будут доступны после инициализации SDK.
 
-> [!NOTE]
 > Цвета `background` и `accent` автоматически изменяются в зависимости от query параметров в URL.
 >  `background` и `accent` соответственно, например: `?background=292929&accent=4ee100`. Поддерживается прозрачность.
 

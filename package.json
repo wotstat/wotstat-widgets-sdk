@@ -25,6 +25,7 @@
       "require": "./dist/wotstat-widget-sdk.umd.cjs"
     }
   },
+  "main": "dist/wotstat-widget-sdk.umd.cjs",
   "devDependencies": {
     "@types/ws": "^8.5.11",
     "@vitest/coverage-v8": "^2.0.4",
