@@ -12,14 +12,15 @@ class WidgetSDK<T extends WidgetsSdkData> {
   constructor(options?: Options);
   dispose(): void;
 
-  onStatusChange(callback: (status: SDKStatus) => void): () => boolean;
+  onStatusChange(callback: (status: SDKStatus) => void, options?: { immediate: boolean }): () => boolean;
   onAnyChange(callback: (path: string, value: any) => void): () => boolean;
   onAnyTrigger(callback: (path: string, value: any) => void): () => boolean;
 }
 ```
 
 ### onStatusChange
-Подписка на изменение статуса SDK. Возвращает функцию отписки.
+Подписка на изменение статуса SDK. Возвращает функцию отписки.  
+Вторым аргументом можно передать `{ immediate: true }`, чтобы получить текущий статус сразу, это удобно для инициализации.
 
 ```ts
 const sdk = new WidgetSDK()
@@ -54,12 +55,13 @@ unsubscribe()
 
 
 ## State
-Предоставляет интерфейс для доступа к текущему значению `value` и подписки на его изменение `watch`. Изменённое значения сохраняется в SDK и доступно в любой момент.
+Предоставляет интерфейс для доступа к текущему значению `value` и подписки на его изменение `watch`. Изменённое значения сохраняется в SDK и доступно в любой момент.  
+При подписке `watch`, можно указать `{ immediate: true }` вторым значением, чтобы получить текущее значение сразу, это удобно для инициализации.
 
 ```ts
 export type State<T> = {
   value: T | undefined,
-  watch: (callback: (value: T, old: T) => void) => (() => void)
+  watch: (callback: (value: T, old: T) => void, options?: { immediate: boolean }) => (() => void)
 }
 ```
 

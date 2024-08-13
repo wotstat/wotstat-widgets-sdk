@@ -14,7 +14,7 @@
     WidgetMetaTags.enableAutoHeight()
     const sdk = new WidgetSDK()
 
-    sdk.onStatusChange(status => document.getElementById('status').innerText = `Status: ${status}`)
+    sdk.onStatusChange(status => document.getElementById('status').innerText = `Status: ${status}`, { immediate: true })
   </script>
 
   <div class="widgets-sdk-styles">

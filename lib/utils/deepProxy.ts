@@ -1,6 +1,6 @@
 
 export type WatchStateCallback<T> = (value: T, old: T) => void
-export type WatchState<T> = (callback: WatchStateCallback<T>) => (() => void)
+export type WatchState<T> = (callback: WatchStateCallback<T>, options?: { immediate: boolean }) => (() => void)
 
 export type State<T> = {
   value: T | undefined,
@@ -8,7 +8,7 @@ export type State<T> = {
 }
 
 export type WatchTriggerCallback<T> = (value: T) => void
-export type WatchTrigger<T> = (callback: (value: T) => void) => (() => void)
+export type WatchTrigger<T> = (callback: WatchTriggerCallback<T>) => (() => void)
 
 export type Trigger<T> = {
   watch: WatchTrigger<T>
@@ -27,9 +27,11 @@ export function createDeepProxy<T extends object>(initial: Map<string, any> = ne
     return {
       get(target, p, receiver) {
         if (p === 'value') return keyValue.get(path)
-        if (p === 'watch') return ((callback: WatchStateCallback<T>) => {
+        if (p === 'watch') return ((callback: WatchStateCallback<T>, options?: { immediate: boolean }) => {
           if (listeners.has(path)) listeners.get(path)!.add(callback)
           else listeners.set(path, new Set([callback]))
+
+          if (options?.immediate) callback(keyValue.get(path), keyValue.get(path))
 
           return () => {
             listeners.get(path)!.delete(callback)

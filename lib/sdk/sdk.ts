@@ -71,8 +71,9 @@ export class SDK<T extends WidgetsSdkData> {
     this.websocket = null
   }
 
-  onStatusChange(callback: (status: SDKStatus) => void) {
+  onStatusChange(callback: (status: SDKStatus) => void, options?: { immediate: boolean }) {
     this.onStatusChangeCallbacks.add(callback)
+    if (options?.immediate) callback(this.status)
     return () => this.onStatusChangeCallbacks.delete(callback)
   }
 
