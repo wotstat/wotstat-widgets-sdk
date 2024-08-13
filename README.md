@@ -116,8 +116,4 @@ WidgetMetaTags.disableAutoHeight()
 ## Debug Виджет
 Есть специальный `debug` виджет, который отображает почти все возможные данные SDK.
 
-### В ангаре
-![](/.github/debug-widget-hangar.png)
-
-### В бою
-![](/.github/debug-widget-battle.png)
+![](/.github/debug-widget.png)
