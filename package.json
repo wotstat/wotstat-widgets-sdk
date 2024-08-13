@@ -22,10 +22,10 @@
   "exports": {
     ".": {
       "import": "./dist/wotstat-widgets-sdk.js",
-      "require": "./dist/wotstat-widgets-sdk.umd.cjs"
+      "require": "./dist/wotstat-widgets-sdk.umd.js"
     }
   },
-  "main": "dist/wotstat-widgets-sdk.umd.cjs",
+  "main": "dist/wotstat-widgets-sdk.umd.js",
   "devDependencies": {
     "@types/ws": "^8.5.11",
     "@vitest/coverage-v8": "^2.0.4",
