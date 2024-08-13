@@ -1,6 +1,6 @@
 import { State, Trigger } from "../../utils/deepProxy"
 import { KeyCodes } from "./keycodes"
-import { PlayerFeedback } from "./playerFeedbacks"
+import { AttackReason, PlayerFeedback } from "./playerFeedbacks"
 
 type Vector3 = [x: number, y: number, z: number]
 type Rotation = [pitch: number, yaw: number, roll: number]
@@ -131,6 +131,7 @@ export interface WidgetsSdkData {
     arenaId: State<number>
     arena: State<{
       tag: string
+      localizedName: string
       mode: string
       gameplay: string
       team: number
@@ -177,7 +178,7 @@ export interface WidgetsSdkData {
       attacker: VehicleWithOwner | null,
       damage: number,
       health: number,
-      source: number
+      reason: AttackReason
     }>
 
     onPlayerFeedback: Trigger<PlayerFeedback>

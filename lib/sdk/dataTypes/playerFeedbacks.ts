@@ -11,7 +11,7 @@ export type ShellType =
   'HE_LEGACY_NO_STUN' |
   'FLAME'
 
-type AttackReason =
+export type AttackReason =
   'shot' |
   'fire' |
   'ramming' |
@@ -66,11 +66,7 @@ type CriticalHitExtra = {
   vehicle: VehicleWithOwner
 }
 
-type Spotted = {
-  type: 'spotted'
-  data: VisibleExtra
-}
-
+type Spotted = { type: 'spotted', data: VisibleExtra }
 type TargetVisibility = { type: 'targetVisibility', data: VisibleExtra }
 type Detected = { type: 'detected', data: VisibleExtra }
 type RadioAssist = { type: 'radioAssist', data: DamageExtra }
@@ -96,6 +92,7 @@ type MultiStun = { type: 'multiStun', data: { stunCount: number } }
 
 
 export type PlayerFeedback =
+  Spotted |
   TargetVisibility |
   Detected |
   RadioAssist |
