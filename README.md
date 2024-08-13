@@ -3,35 +3,28 @@
 [![Downloads][downloads-img]][downloads-url]
 [![Build Status][build-img]][build-url]
 
-[npm-img]: https://img.shields.io/npm/v/wotstat-widgets-sdk
-[npm-url]: https://www.npmjs.com/package/wotstat-widgets-sdk
-[build-img]: https://github.com/WOT-STAT/wotstat-widgets-sdk/actions/workflows/publish.yml/badge.svg
-[build-url]: https://github.com/WOT-STAT/wotstat-widgets-sdk/actions/workflows/publish.yml
-[downloads-img]: https://img.shields.io/npm/dt/wotstat-widgets-sdk
-[downloads-url]: https://www.npmtrends.com/wotstat-widgets-sdk
-
-
 JavaScript библиотека для создания веб-виджетов и связи с `wotstat-data-provider` модом.
 
-![schema](.github/widgets-sdk.png)
+![schema](https://raw.githubusercontent.com/WOT-STAT/wotstat-widgets-sdk/main/.github/widgets-sdk.png)
 
 > Для работы SDK необходим мод [wotstat-data-provider](https://github.com/WOT-STAT/data-provider) или [wotstat-widgets](https://github.com/WOT-STAT/wotstat-widgets)
 
 ## Установка
 
-С помощью npm:
+### С помощью npm:
 ```bash
 npm i wotstat-widgets-sdk
 ```
 
-> РЕКОМЕНДУЕТЯ  
-> SDK предоставляет полную поддержку типов, что позволяет сильно упростить разработку виджетов.
-
-С помощью CDN:
+### С помощью CDN:
 ```html
 <script src="https://unpkg.com/wotstat-widgets-sdk"></script>
 ```
 После чего, будет объявлен глобальный объект `WotstatWidgetsSdk`.
+
+
+> Рекомендуется использовать NPM  
+> Вместе с пакетом устанавливается объявление типов, что сильно упрощает разработку.
 
 ## Использование
 
@@ -131,4 +124,12 @@ WidgetMetaTags.disableAutoHeight()
 ## Debug Виджет
 Есть специальный `debug` виджет, который отображает почти все возможные данные SDK.
 
-![](/.github/debug-widget.png)
+![](https://raw.githubusercontent.com/WOT-STAT/wotstat-widgets-sdk/main/.github/debug-widget.png)
+
+
+[npm-img]: https://img.shields.io/npm/v/wotstat-widgets-sdk
+[npm-url]: https://www.npmjs.com/package/wotstat-widgets-sdk
+[build-img]: https://github.com/WOT-STAT/wotstat-widgets-sdk/actions/workflows/publish.yml/badge.svg
+[build-url]: https://github.com/WOT-STAT/wotstat-widgets-sdk/actions/workflows/publish.yml
+[downloads-img]: https://img.shields.io/npm/dt/wotstat-widgets-sdk
+[downloads-url]: https://www.npmtrends.com/wotstat-widgets-sdk
