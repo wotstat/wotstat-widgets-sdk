@@ -7,8 +7,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: 'lib/main.ts',
-      name: 'wotstat-widget-sdk',
-      fileName: 'wotstat-widget-sdk'
+      name: 'WotstatWidgetsSdk',
+      fileName: 'wotstat-widgets-sdk'
     },
     sourcemap: true,
     minify: 'esbuild',

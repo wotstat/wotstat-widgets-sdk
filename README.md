@@ -32,7 +32,7 @@ npm i wotstat-widgets-sdk
 ## Использование
 
 ```js
-import { WidgetSDK } from 'wotstat-widget-sdk'
+import { WidgetSDK } from 'wotstat-widgets-sdk'
 
 // инициализация SDK
 const sdk = new WidgetSDK()
@@ -112,7 +112,7 @@ SDK предоставляет некоторые стандартные сти�
 На данный момент существует только один тег – `wotstat-widget:auto-height` для автоматического расчёта высоты виджета в моде `wotstat-widgets`.
 
 ```js
-import { WidgetMetaTags } from 'wotstat-widget-sdk'
+import { WidgetMetaTags } from 'wotstat-widgets-sdk'
 
 // включить автоматическое изменение высоты виджета, если оно было отключено
 WidgetMetaTags.enableAutoHeight()

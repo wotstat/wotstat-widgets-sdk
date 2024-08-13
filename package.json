@@ -12,8 +12,8 @@
     "email": "soprachev@wotstat.info",
     "url": "https://wotstat.info"
   },
-  "module": "dist/wotstat-widget-sdk.js",
-  "types": "dist/wotstat-widget-sdk.d.ts",
+  "module": "dist/wotstat-widgets-sdk.js",
+  "types": "dist/wotstat-widgets-sdk.d.ts",
   "scripts": {
     "dev": "vite",
     "build-lib": "vite build",
@@ -21,11 +21,11 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/wotstat-widget-sdk.js",
-      "require": "./dist/wotstat-widget-sdk.umd.cjs"
+      "import": "./dist/wotstat-widgets-sdk.js",
+      "require": "./dist/wotstat-widgets-sdk.umd.cjs"
     }
   },
-  "main": "dist/wotstat-widget-sdk.umd.cjs",
+  "main": "dist/wotstat-widgets-sdk.umd.cjs",
   "devDependencies": {
     "@types/ws": "^8.5.11",
     "@vitest/coverage-v8": "^2.0.4",
