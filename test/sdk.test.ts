@@ -103,7 +103,7 @@ describe<Context>('Messages', ctx => {
 
     sendInit(ctx.wss, [{ path: 'a.b.c', value: { d: 1 } }])
 
-    await vi.waitUntil(() => ctx.sdk.status === 'ready')
+    await vi.waitUntil(() => ctx.sdk.status === 'connected')
 
     sendTrigger(ctx.wss, 'a.b.t', { d: 2 })
     await vi.waitUntil(() => fn.mock.calls.length === 1)
@@ -120,7 +120,7 @@ describe<Context>('Messages', ctx => {
 
     sendInit(ctx.wss, [{ path: 'a.b.c', value: { d: 1 } }])
 
-    await vi.waitUntil(() => ctx.sdk.status === 'ready')
+    await vi.waitUntil(() => ctx.sdk.status === 'connected')
 
     sendTrigger(ctx.wss, 'a.b.clearTrigger', null)
     await vi.waitUntil(() => fn.mock.calls.length === 1)
@@ -151,7 +151,7 @@ describe('Init', () => {
     sendInit(wss)
 
     await vi.waitUntil(() => fn.mock.calls.length === 1)
-    expect(fn).toHaveBeenCalledWith('ready')
+    expect(fn).toHaveBeenCalledWith('connected')
   })
 
   it.concurrent('Init before server', async () => {
@@ -170,7 +170,7 @@ describe('Init', () => {
     sendInit(wss)
 
     await vi.waitUntil(() => fn.mock.calls.length === 1)
-    expect(fn).toHaveBeenCalledWith('ready')
+    expect(fn).toHaveBeenCalledWith('connected')
   })
 
   it.concurrent('Reconnecting', async () => {
@@ -186,7 +186,7 @@ describe('Init', () => {
     sendInit(wss)
 
     await vi.waitUntil(() => fn.mock.calls.length === 1)
-    expect(fn).toHaveBeenCalledWith('ready')
+    expect(fn).toHaveBeenCalledWith('connected')
 
     wss.clients.forEach(client => client.close())
     wss.close()
@@ -198,7 +198,7 @@ describe('Init', () => {
     await vi.waitUntil(() => wss2.clients.size === 1)
     sendInit(wss2)
 
-    await vi.waitUntil(() => fn.mock.lastCall?.[0] === 'ready')
+    await vi.waitUntil(() => fn.mock.lastCall?.[0] === 'connected')
 
     expect(fn).toHaveBeenCalledTimes(3)
   })

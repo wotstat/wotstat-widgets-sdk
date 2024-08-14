@@ -5,7 +5,7 @@ import { WidgetsSdkData } from './dataTypes'
 import { setup as setupStyle } from "./style";
 import { DataProviderEmulator } from "./emulator";
 
-export type SDKStatus = 'connecting' | 'ready'
+export type SDKStatus = 'connecting' | 'connected'
 
 export type Options = Partial<{
   connect: boolean
@@ -107,7 +107,7 @@ export class SDK<T extends WidgetsSdkData> {
   private onInitMessage(msg: InitMessage) {
     const initial = new Map<string, any>(msg.states.map(({ path, value }) => [path, value]))
     this.dataProxy.resetup(initial)
-    this.status = 'ready'
+    this.status = 'connected'
   }
 
   private onClose = (event: CloseEvent) => {

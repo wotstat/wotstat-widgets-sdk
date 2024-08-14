@@ -17,10 +17,22 @@
     sdk.onStatusChange(status => document.getElementById('status').innerText = `Status: ${status}`, { immediate: true })
   </script>
 
+  <style>
+    h1,
+    p {
+      margin: 0;
+    }
+
+    .card {
+      text-align: center;
+    }
+  </style>
+
   <div class="widgets-sdk-styles">
     <div class="autoscale">
       <div class="card">
-        <p class="primary">Hello <span class="accent">Widgets!</span></p>
+        <h1 class="primary">Hello <span class="accent">Widgets!</span></h1>
+        <br>
         <p id="status"></p>
       </div>
     </div>

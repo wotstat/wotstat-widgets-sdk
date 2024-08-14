@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>AutoHeight change</title>
+</head>
+
+<body>
+  <script src="https://unpkg.com/wotstat-widgets-sdk"></script>
+  <script type="module">
+    const { WidgetSDK, WidgetMetaTags } = WotstatWidgetsSdk
+
+    let isEnableAutoHeight = false
+    const sdk = new WidgetSDK()
+
+    sdk.data.keyboard.KEY_H.watch(checkShortcut)
+    sdk.data.keyboard.KEY_P.watch(checkShortcut)
+
+    function checkShortcut(isPressed) {
+      if (!isPressed) return
+      if (sdk.data.keyboard.KEY_H.value && sdk.data.keyboard.KEY_P.value) {
+        if (isEnableAutoHeight) {
+          WidgetMetaTags.disableAutoHeight()
+        } else {
+          WidgetMetaTags.enableAutoHeight()
+        }
+        isEnableAutoHeight = !isEnableAutoHeight
+        document.getElementById('status').innerText = `Auto height is ${isEnableAutoHeight ? 'enabled' : 'disabled'}`
+      }
+    }
+  </script>
+
+  <style>
+    h1,
+    p {
+      margin: 0;
+    }
+  </style>
+
+  <div class="widgets-sdk-styles">
+    <div class="autoscale">
+      <div class="card">
+        <h1 class="primary">Press <span class="accent bold">H+P</span> to toggle auto-height mode</h1>
+        <br>
+        <p class="secondary">Enable resize mode to view changes</p>
+        <br>
+        <p class="accent" id="status">Auto height is disabled</p>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
