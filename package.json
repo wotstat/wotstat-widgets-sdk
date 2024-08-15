@@ -21,7 +21,7 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/wotstat-widgets-sdk.js",
+      "import": "./dist/wotstat-widgets-sdk.es.js",
       "require": "./dist/wotstat-widgets-sdk.umd.js"
     }
   },
