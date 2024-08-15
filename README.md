@@ -122,7 +122,9 @@ WidgetMetaTags.disableAutoHeight()
 ```
 
 ## Debug Виджет
-Есть специальный `debug` виджет, который отображает почти все возможные данные SDK.
+Есть специальный `debug` виджет, который отображает почти все возможные данные SDK
+
+https://widgets.wotstat.info/tools/debug
 
 ![](https://raw.githubusercontent.com/WOT-STAT/wotstat-widgets-sdk/main/.github/debug-widget.png)
 
