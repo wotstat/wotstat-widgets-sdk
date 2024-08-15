@@ -1,6 +1,4 @@
-
-
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import dts from 'vite-plugin-dts'
 
 export default defineConfig({
@@ -8,7 +6,10 @@ export default defineConfig({
     lib: {
       entry: 'lib/main.ts',
       name: 'WotstatWidgetsSdk',
-      fileName: (format) => `wotstat-widgets-sdk.${format}.js`,
+      fileName: (format) => {
+        if (format === 'es') return 'wotstat-widgets-sdk.js'
+        return `wotstat-widgets-sdk.${format}.js`
+      },
     },
     sourcemap: true,
     minify: 'esbuild',
