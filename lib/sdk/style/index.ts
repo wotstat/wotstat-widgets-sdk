@@ -45,8 +45,12 @@ function onLocationChange(href: string) {
   document.documentElement.style.setProperty('--wotstat-background', backgroundColor)
 }
 
-export function setup() {
+export function injectStyles() {
   document.head.insertAdjacentHTML("beforeend", `<style>${style}</style>`)
+}
+
+export function setup() {
+  injectStyles()
   setupHistoryChanged()
 
   let previousHref = window.location.href
