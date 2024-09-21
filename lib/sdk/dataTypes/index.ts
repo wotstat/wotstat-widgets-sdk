@@ -114,8 +114,8 @@ export interface WidgetsSdkData {
           optSwitchEnabled: boolean,
           shellsSwitchEnabled: boolean,
         }
-        unlockedModifications: string[]
-        selectedModifications: string[]
+        unlockedModifications: (string | null)[]
+        selectedModifications: (string | null)[]
       }>
     }
   }
