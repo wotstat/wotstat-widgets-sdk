@@ -89,6 +89,7 @@ type DestructiblesDefended = { type: 'destructiblesDefended', data: { extra: unk
 type BaseCapturePoints = { type: 'baseCapturePoints', data: { points: number, session: number } }
 type BaseCaptureBlocked = { type: 'baseCaptureBlocked', data: { points: number, session: number } }
 type MultiStun = { type: 'multiStun', data: { stunCount: number } }
+type VehicleHealthAdded = { type: 'vehicleHealthAdded', data: { health: number } }
 
 
 export type PlayerFeedback =
@@ -114,4 +115,5 @@ export type PlayerFeedback =
   DestructiblesDefended |
   BaseCapturePoints |
   BaseCaptureBlocked |
-  MultiStun 
+  MultiStun |
+  VehicleHealthAdded
