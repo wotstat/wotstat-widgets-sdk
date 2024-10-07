@@ -86,6 +86,7 @@ export type Trigger<T> = {
 | [platoon](#platoon)  | Информация о текущем взводе                                  |
 | [hangar](#hangar)    | Информация актуальная в ангаре                               |
 | [battle](#battle)    | Информация актуальная в бою                                  |
+| [dossier](#dossier)  | Информация о статистике игрока на танке                      |
 | registeredExtensions | Список зарегистрированных расширений `data-provider`'a       |
 | extensions           | Точка входа в данные расширений [подробнее](./extensions.md) |
 
@@ -224,6 +225,7 @@ slots: State<({
 | `vehicle.postProgression.features`              | Настройки полевой (включены или выключены переключения слотов перед началом боя)    |
 | `vehicle.postProgression.unlockedModifications` | Разблокированные модификации                                                        |
 | `vehicle.postProgression.selectedModifications` | Выбранные модификации                                                               |
+| `vehicle.postProgression.modifications`         | Доступные пары модификации                                                          |
 
 ```ts
 isInHangar: State<boolean>
@@ -252,6 +254,7 @@ vehicle: {
     }
     unlockedModifications: string[]
     selectedModifications: string[]
+    modifications: string[][]
   }>
 }
 ```
@@ -377,6 +380,24 @@ onDamage: Trigger<{
 
 onPlayerFeedback: Trigger<PlayerFeedback>
 onBattleResult: Trigger<unknown>
+```
+
+### Dossier
+Информация о статистике игрока на танке
+
+| Путь                      | Описание                                             |
+| ------------------------- | ---------------------------------------------------- |
+| `current`                 | Статистика на текущем танке                          |
+| `current.movingAvgDamage` | Скользящий средний для отметки                       |
+| `current.damageRating`    | Текущий процент отметки в процентах (например 66.42) |
+| `current.battlesCount`    | Количество боёв на танке                             |
+
+```ts
+current: State<{
+  movingAvgDamage: number
+  damageRating: number
+  battlesCount: number
+} | null>
 ```
 
 

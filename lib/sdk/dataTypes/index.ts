@@ -116,6 +116,7 @@ export interface WidgetsSdkData {
         }
         unlockedModifications: (string | null)[]
         selectedModifications: (string | null)[]
+        modifications: string[][]
       }>
     }
   }
@@ -183,6 +184,14 @@ export interface WidgetsSdkData {
 
     onPlayerFeedback: Trigger<PlayerFeedback>
     onBattleResult: Trigger<unknown>
+  }
+
+  dossier: {
+    current: State<{
+      movingAvgDamage: number
+      damageRating: number
+      battlesCount: number
+    } | null>
   }
 
   extensions: WidgetsSdkExtensions
