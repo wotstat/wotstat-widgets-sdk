@@ -20,12 +20,8 @@
     function checkShortcut(isPressed) {
       if (!isPressed) return
       if (sdk.data.keyboard.KEY_H.value && sdk.data.keyboard.KEY_P.value) {
-        if (isEnableAutoHeight) {
-          WidgetMetaTags.disableAutoHeight()
-        } else {
-          WidgetMetaTags.enableAutoHeight()
-        }
         isEnableAutoHeight = !isEnableAutoHeight
+        WidgetMetaTags.setAutoHeight(isEnableAutoHeight)
         document.getElementById('status').innerText = `Auto height is ${isEnableAutoHeight ? 'enabled' : 'disabled'}`
       }
     }

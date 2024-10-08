@@ -15,6 +15,10 @@ class WidgetSDK<T extends WidgetsSdkData> {
   onStatusChange(callback: (status: SDKStatus) => void, options?: { immediate: boolean }): () => boolean;
   onAnyChange(callback: (path: string, value: any) => void): () => boolean;
   onAnyTrigger(callback: (path: string, value: any) => void): () => boolean;
+  onClearData(callback: () => void): { 
+    setReadyToClearData: (ready: boolean) => void
+    cancel: () => void
+  };
 }
 ```
 
@@ -53,6 +57,17 @@ const unsubscribe = sdk.onAnyTrigger((path, value) => console.log(path, value))
 unsubscribe()
 ```
 
+### onClearData
+Подписка на действие очистки данных виджета. Возвращает объект с функциями управления.
+
+```ts
+const sdk = new WidgetSDK()
+const { setReadyToClearData, unsubscribe } = sdk.onClearData(() => console.log('Clear data'))
+<...>
+setReadyToClearData(true)
+<...>
+unsubscribe()
+```
 
 ## State
 Предоставляет интерфейс для доступа к текущему значению `value` и подписки на его изменение `watch`. Изменённое значения сохраняется в SDK и доступно в любой момент.  

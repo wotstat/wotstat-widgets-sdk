@@ -51,6 +51,14 @@ sdk.data.hangar.vehicle.info.watch((newValue, oldValue) => {
 sdk.data.battle.onBattleResult.watch(result => {
   console.log('Battle result:', result)
 })
+
+// подписка на действие очистки данных
+const { setReadyToClearData } = sdk.onClearData(() => {
+  console.log('Clear data')
+})
+
+// готовность к очистке данных (если передать false, то кнопки очистки данных не будет)
+setReadyToClearData(true)
 ```
 
 Больше примеров можно найти тут: [examples](./examples)
@@ -114,10 +122,16 @@ SDK предоставляет некоторые стандартные сти�
 import { WidgetMetaTags } from 'wotstat-widgets-sdk'
 
 // включить автоматическое изменение высоты виджета, если оно было отключено
-WidgetMetaTags.enableAutoHeight()
+WidgetMetaTags.setAutoHeight(true)
 
 // отключить автоматическое изменение высоты виджета, если оно было включено
-WidgetMetaTags.disableAutoHeight()
+WidgetMetaTags.setAutoHeight(false)
+
+// сделать виджет доступным только в ангаре
+WidgetMetaTags.setHangarOnly(true)
+
+// сделать виджет доступным везде
+WidgetMetaTags.setHangarOnly(false)
 
 ```
 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Clear data</title>
+</head>
+
+<body>
+  <script src="https://unpkg.com/wotstat-widgets-sdk"></script>
+  <script type="module">
+    const { WidgetSDK, WidgetMetaTags } = WotstatWidgetsSdk
+
+    WidgetMetaTags.setAutoHeight(true)
+    const sdk = new WidgetSDK()
+
+    let count = 0
+
+    function updateHtml() {
+      setReadyToClearData(count > 0)
+      document.getElementById('counter').innerText = count
+      document.getElementById('can-clear').innerText = count > 0 ? 'You can clear data' : 'Default state, nothing to clear'
+    }
+
+    const { setReadyToClearData } = sdk.onClearData(() => {
+      count = 0
+      updateHtml()
+    })
+
+    sdk.data.keyboard.KEY_SPACE.watch(() => {
+      count++
+      updateHtml()
+    })
+  </script>
+
+  <style>
+    h1,
+    p {
+      margin: 0;
+    }
+  </style>
+
+  <div class="widgets-sdk-styles">
+    <div class="autoscale">
+      <div class="card">
+        <h1 class="secondary">Press <span class="accent bold">SPACE</span> to increase counter</h1>
+        <br>
+        <p class="accent" id="counter">0</p>
+        <br>
+        <p class="secondary" id="can-clear">Default state, nothing to clear</p>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
