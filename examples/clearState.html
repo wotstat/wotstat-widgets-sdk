@@ -22,7 +22,7 @@
       document.getElementById('can-clear').innerText = count > 0 ? 'You can clear data' : 'Default state, nothing to clear'
     }
 
-    const { setReadyToClearData } = sdk.onClearData(() => {
+    const { setReadyToClearData } = sdk.commands.onClearData(() => {
       count = 0
       updateHtml()
     })
@@ -45,7 +45,7 @@
       <div class="card">
         <h1 class="secondary">Press <span class="accent bold">SPACE</span> to increase counter</h1>
         <br>
-        <p class="accent" id="counter">0</p>
+        <h1 class="accent" id="counter">0</h1>
         <br>
         <p class="secondary" id="can-clear">Default state, nothing to clear</p>
       </div>

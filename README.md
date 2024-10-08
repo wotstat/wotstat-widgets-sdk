@@ -53,7 +53,7 @@ sdk.data.battle.onBattleResult.watch(result => {
 })
 
 // подписка на действие очистки данных
-const { setReadyToClearData } = sdk.onClearData(() => {
+const { setReadyToClearData } = sdk.commands.onClearData(() => {
   console.log('Clear data')
 })
 

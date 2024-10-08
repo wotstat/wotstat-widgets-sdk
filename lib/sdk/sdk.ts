@@ -4,7 +4,7 @@ import { isValidChangeStateData, isValidInitData, isValidTriggerData } from "./u
 import { WidgetsSdkData } from './dataTypes'
 import { setup as setupStyle } from "./style";
 import { DataProviderEmulator } from "./emulator";
-import { MetaTags } from "./metaTags";
+import { widgetCommands } from "./widgetCommands";
 
 export type SDKStatus = 'connecting' | 'connected'
 
@@ -30,7 +30,6 @@ export class SDK<T extends WidgetsSdkData> {
   private readonly onStatusChangeCallbacks = new Set<(status: SDKStatus) => void>()
   private readonly onAnyChangeCallbacks = new Set<(path: string, value: any) => void>()
   private readonly onAnyTriggerCallbacks = new Set<(path: string, value: any) => void>()
-  private readonly onClearDataCallbacks = new Map<() => void, boolean>()
   private readonly dataProxy = createDeepProxy<T>()
 
   private port = 33800
@@ -48,6 +47,10 @@ export class SDK<T extends WidgetsSdkData> {
 
   get data() {
     return this.dataProxy.proxy
+  }
+
+  get commands() {
+    return widgetCommands
   }
 
   constructor(options?: Options) {
@@ -87,24 +90,6 @@ export class SDK<T extends WidgetsSdkData> {
   onAnyTrigger(callback: (path: string, value: any) => void) {
     this.onAnyTriggerCallbacks.add(callback)
     return () => this.onAnyTriggerCallbacks.delete(callback)
-  }
-
-  onClearData(callback: () => void) {
-    this.onClearDataCallbacks.set(callback, false)
-    return {
-      setReadyToClearData: (isReady: boolean) => {
-        this.onClearDataCallbacks.set(callback, isReady)
-        this.updateReadyToClearData()
-      },
-      unsubscribe: () => {
-        this.onClearDataCallbacks.delete(callback)
-        this.updateReadyToClearData()
-      }
-    }
-  }
-
-  private updateReadyToClearData() {
-    MetaTags.setReadyToClearData([...this.onClearDataCallbacks.values()].some(Boolean))
   }
 
   private closeConnection() {

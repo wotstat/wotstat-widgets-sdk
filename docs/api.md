@@ -8,6 +8,7 @@
 class WidgetSDK<T extends WidgetsSdkData> {
   get status(): SDKStatus;
   get data(): DeepProxy<T>;
+  get commands(): Commands;
 
   constructor(options?: Options);
   dispose(): void;
@@ -15,6 +16,9 @@ class WidgetSDK<T extends WidgetsSdkData> {
   onStatusChange(callback: (status: SDKStatus) => void, options?: { immediate: boolean }): () => boolean;
   onAnyChange(callback: (path: string, value: any) => void): () => boolean;
   onAnyTrigger(callback: (path: string, value: any) => void): () => boolean;
+}
+
+class Commands {  
   onClearData(callback: () => void): { 
     setReadyToClearData: (ready: boolean) => void
     cancel: () => void
@@ -57,12 +61,12 @@ const unsubscribe = sdk.onAnyTrigger((path, value) => console.log(path, value))
 unsubscribe()
 ```
 
-### onClearData
+### commands.onClearData
 Подписка на действие очистки данных виджета. Возвращает объект с функциями управления.
 
 ```ts
 const sdk = new WidgetSDK()
-const { setReadyToClearData, unsubscribe } = sdk.onClearData(() => console.log('Clear data'))
+const { setReadyToClearData, unsubscribe } = sdk.commands.onClearData(() => console.log('Clear data'))
 <...>
 setReadyToClearData(true)
 <...>
