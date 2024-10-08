@@ -27,7 +27,8 @@
       updateHtml()
     })
 
-    sdk.data.keyboard.KEY_SPACE.watch(() => {
+    sdk.data.keyboard.KEY_SPACE.watch((isDown) => {
+      if (!isDown) return
       count++
       updateHtml()
     })

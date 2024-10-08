@@ -11,7 +11,7 @@ export class WidgetCommands {
     if (document.readyState === "complete") {
       this.setup();
     } else {
-      document.addEventListener('DOMContentLoaded', this.setup);
+      document.addEventListener('DOMContentLoaded', () => this.setup());
     }
   }
 
