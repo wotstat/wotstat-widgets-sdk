@@ -155,6 +155,7 @@ export interface WidgetsSdkData {
       idealDispersion: State<number>
       serverDispersion: State<number>
       clientDispersion: State<number>
+      aimingTime: State<number>
     }
 
     efficiency: {
