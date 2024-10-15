@@ -8,11 +8,10 @@ export class WidgetCommands {
   private readonly onClearDataCallbacks = new Map<() => void, boolean>()
 
   constructor() {
-    if (document.readyState === "complete") {
-      this.setup();
-    } else {
-      document.addEventListener('DOMContentLoaded', () => this.setup());
-    }
+    if (document.readyState === "complete") this.setup()
+    else document.addEventListener('readystatechange', () => {
+      if (document.readyState === 'complete') this.setup()
+    })
   }
 
   private setup() {
