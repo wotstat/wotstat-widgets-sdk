@@ -27,6 +27,8 @@ type Tankman = {
   isFemale: boolean
 }
 
+type AimingMode = 'arcade' | 'strategic' | 'arty' | 'sniper' | 'postmortem' | 'debug' | 'video' | 'mapcase' | 'arcadeMapcase' | 'epicMapcase' | 'respawn' | 'deathfreecam' | 'dualgun' | 'arcadeEpicMinefieldMapcase' | 'killcam' | 'vehiclesSelection' | 'twinGun' | 'lookAtKiller'
+
 export type VehicleWithOwner = Vehicle & {
   playerName: string
   playerId: number
@@ -156,6 +158,7 @@ export interface WidgetsSdkData {
       serverDispersion: State<number>
       clientDispersion: State<number>
       aimingTime: State<number>
+      aimingMode: State<AimingMode>
     }
 
     efficiency: {
