@@ -124,14 +124,20 @@ import { WidgetMetaTags } from 'wotstat-widgets-sdk'
 // включить автоматическое изменение высоты виджета, если оно было отключено
 WidgetMetaTags.setAutoHeight(true)
 
-// отключить автоматическое изменение высоты виджета, если оно было включено
-WidgetMetaTags.setAutoHeight(false)
-
 // сделать виджет доступным только в ангаре
 WidgetMetaTags.setHangarOnly(true)
 
-// сделать виджет доступным везде
-WidgetMetaTags.setHangarOnly(false)
+// разрешить очистку данных (пкм -> очистить данные)
+WidgetMetaTags.setReadyToClearData(true)
+
+// указать, что позиция виджета должна различаться в аркадном и снайперском прицелах (ручная настройка по ПКМ более приоритета)
+WidgetMetaTags.setUseSniperMode(true)
+
+// указать, что виджет должен быть в верхнем слое (ручная настройка по ПКМ более приоритета)
+WidgetMetaTags.setPreferredTopLayer(true)
+
+// убрать ограничение на размер виджета
+WidgetMetaTags.setUnlimitedSize(true)
 
 ```
 
