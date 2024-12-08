@@ -27,15 +27,15 @@
   },
   "main": "dist/wotstat-widgets-sdk.umd.js",
   "devDependencies": {
-    "@types/ws": "^8.5.12",
-    "@vitest/coverage-v8": "^2.1.2",
-    "happy-dom": "^15.7.4",
+    "@types/ws": "^8.5.13",
+    "@vitest/coverage-v8": "^2.1.8",
+    "happy-dom": "^15.11.7",
     "jsdom": "^25.0.1",
-    "sass": "^1.79.4",
-    "typescript": "^5.6.2",
-    "vite": "^5.4.8",
-    "vite-plugin-dts": "^4.2.3",
-    "vitest": "^2.1.2",
+    "sass": "^1.82.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
+    "vite-plugin-dts": "^4.3.0",
+    "vitest": "^2.1.8",
     "ws": "^8.18.0"
   },
   "files": [
