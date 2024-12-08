@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "github",
-    "url": "https://github.com/WOT-STAT/wotstat-widgets-sdk"
+    "url": "https://github.com/wotstat/wotstat-widgets-sdk"
   },
   "author": {
     "name": "Soprachev Andrei",
