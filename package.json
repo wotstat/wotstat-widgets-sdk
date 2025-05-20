@@ -42,5 +42,9 @@
     "dist",
     "lib",
     "examples"
-  ]
+  ],
+  "dependencies": {
+    "jsondiffpatch": "^0.7.3",
+    "uuid": "^11.1.0"
+  }
 }

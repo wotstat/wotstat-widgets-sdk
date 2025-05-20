@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { create, Delta } from "jsondiffpatch";
+import { useWebSocket } from './utils';
 
 const RELAY_URL = 'wss://widgets-relay.wotstat.info'
 const differ = create()
@@ -116,65 +117,17 @@ class ChangeableRelayState<T> extends RelayState<T> {
   }
 }
 
-class ReadonlyWatchableValue<T> {
-  private currentValue: T
-  private readonly subscribers = new Set<(value: T) => void>()
-
-  constructor(defaultValue: T) {
-    this.currentValue = defaultValue
-  }
-
-  get value() {
-    return this.currentValue
-  }
-
-  protected set value(value: T) {
-    this.currentValue = value
-    this.subscribers.forEach(subscriber => subscriber(value))
-  }
-
-  watch(fn: (value: T) => void, options?: { immediate?: boolean }) {
-    if (options?.immediate) fn(this.currentValue)
-    this.subscribers.add(fn)
-    return () => this.subscribers.delete(fn)
-  }
-
-  protected dispose() {
-    this.subscribers.clear()
-  }
-}
-
-class WatchableValue<T> extends ReadonlyWatchableValue<T> {
-  set value(value: T) {
-    super.value = value
-  }
-
-  dispose() {
-    super.dispose()
-  }
-
-  get readonlyValue() {
-    return this as ReadonlyWatchableValue<T>
-  }
-}
-
 export class WidgetsRelay {
-
-  private websocket: WebSocket | null = null;
-  private reconnect: boolean
-  private readonly connection: string
   private readonly uuid: string
-  private readonly channel: string
   private readonly states = new Map<string, ChangeableRelayState<any>>()
   private readonly lastSendedStates = new Map<ChangeableRelayState<any>, any>()
-  private retryCount = 0
   private readonly intervalHandler: ReturnType<typeof setInterval>
+  private ws: ReturnType<typeof useWebSocket>
 
   private throttleInterval: number
-  private controllableStatus = new WatchableValue<'connecting' | 'connected' | 'disconnected'>('connecting')
 
   get status() {
-    return this.controllableStatus.readonlyValue
+    return this.ws.status.readonlyValue
   }
 
   constructor(options?: {
@@ -185,12 +138,20 @@ export class WidgetsRelay {
     fullSyncInterval?: number
     throttleInterval?: number
   }) {
-    this.reconnect = options?.reconnect ?? true;
     this.uuid = options?.uuid ?? uuidv4();
-    this.channel = options?.channel ?? window.location.search.split('channel-key=')[1]?.split('&')[0] ?? this.uuid;
-    this.connection = `${options?.url ?? RELAY_URL}?uuid=${this.uuid}&channel=${this.channel}`;
 
-    this.connect();
+    const params = new URLSearchParams(window.location.search)
+    const channel = options?.channel ?? params.get('channel-key') ?? this.uuid;
+    const connection = `${options?.url ?? RELAY_URL}?uuid=${this.uuid}&channel=${channel}`;
+
+    this.ws = useWebSocket({
+      connection: connection,
+      reconnect: options?.reconnect ?? true,
+      onMessage: this.onMessage,
+      onClose: this.onClose,
+      onOpen: this.onOpen,
+    })
+
     this.throttleInterval = options?.throttleInterval ?? 300
 
     this.intervalHandler = setInterval(() => {
@@ -226,69 +187,32 @@ export class WidgetsRelay {
   }
 
   private sendState(name: string, state: ChangeableRelayState<any>, full = false) {
-    if (!this.websocket) return
-    if (this.websocket.readyState !== WebSocket.OPEN) return
-
     const lastSendedState = this.lastSendedStates.get(state)
 
     if (!full && lastSendedState !== undefined) {
       const delta = differ.diff(lastSendedState, state.value)
       if (delta === undefined) return
-      this.websocket.send(JSON.stringify({ type: 'delta', uuid: state.uuid, name, delta } satisfies DeltaChangeMessage))
+      this.ws.send(JSON.stringify({ type: 'delta', uuid: state.uuid, name, delta } satisfies DeltaChangeMessage))
     } else {
-      this.websocket.send(JSON.stringify({ type: 'change', uuid: state.uuid, name, value: state.value } satisfies ChangeMessage))
+      this.ws.send(JSON.stringify({ type: 'change', uuid: state.uuid, name, value: state.value } satisfies ChangeMessage))
     }
 
     this.lastSendedStates.set(state, structuredClone(state.value))
   }
 
-  private closeConnection() {
-    if (this.websocket !== null) {
-      this.websocket.removeEventListener('message', this.onMessage)
-      this.websocket.removeEventListener('close', this.onClose)
-      this.websocket.removeEventListener('open', this.onOpen)
-      this.websocket.close()
-    }
-    this.controllableStatus.value = 'disconnected'
-  }
-
-  private connect() {
-    this.retryCount++
-    this.closeConnection();
-    console.log('Connecting to relay server');
-    this.controllableStatus.value = 'connecting'
-    this.websocket = new WebSocket(this.connection);
-    this.websocket.addEventListener('message', this.onMessage)
-    this.websocket.addEventListener('close', this.onClose)
-    this.websocket.addEventListener('open', this.onOpen)
-  }
-
   dispose() {
-    this.closeConnection()
+    this.ws.closeConnection()
     clearInterval(this.intervalHandler)
   }
 
   private onOpen = () => {
-    this.retryCount = 0
-    this.controllableStatus.value = 'connected'
     for (const [stateKey, stateValue] of this.states) this.sendState(stateKey, stateValue)
   }
 
   private onClose = (event: CloseEvent) => {
-
     for (const [stateKey, stateValue] of this.states) {
       for (const [uuid, _] of stateValue.all) stateValue.disconnect(uuid)
     }
-
-    this.controllableStatus.value = 'disconnected'
-
-    if (!this.reconnect) return
-    let delay = 100
-
-    if (this.retryCount > 1000) delay = 10000
-    else if (this.retryCount > 50) delay = 1000
-    else if (this.retryCount > 10) delay = 500
-    setTimeout(() => this.connect(), delay)
   }
 
   private onMessage = (event: MessageEvent) => {
