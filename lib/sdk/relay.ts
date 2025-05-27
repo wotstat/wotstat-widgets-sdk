@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { create, Delta } from "jsondiffpatch";
 import { useWebSocket } from './utils';
+import { RelayDebug } from './debugUtils';
 
 const RELAY_URL = 'wss://widgets-relay.wotstat.info'
 const differ = create()
@@ -73,6 +74,7 @@ export class RelayState<T> {
 
   trigger() {
     this.onSet(this.uuid, this.value)
+    this.selfSubscribers.forEach(subscriber => subscriber(this.uuid, this.value))
   }
 
   watch(fn: (uuid: UUID, value: (T | undefined)) => void, options?: { immediate?: boolean, includeSelf?: boolean }) {
@@ -124,6 +126,19 @@ export class WidgetsRelay {
   private readonly intervalHandler: ReturnType<typeof setInterval>
   private ws: ReturnType<typeof useWebSocket>
 
+  private readonly relayDebug = new RelayDebug({
+    onSetState: (uuid, key, value) => {
+      this.onMessage(new MessageEvent('message', {
+        data: JSON.stringify({ type: 'change', uuid, name: key, value } satisfies ChangeMessage)
+      }))
+    },
+    onClientDisconnected: (uuid) => {
+      this.onMessage(new MessageEvent('message', {
+        data: JSON.stringify({ type: 'disconnect', uuid } satisfies DisconnectMessage)
+      }))
+    }
+  })
+
   private throttleInterval: number
 
   get status() {
@@ -157,6 +172,25 @@ export class WidgetsRelay {
     this.intervalHandler = setInterval(() => {
       for (const [stateKey, stateValue] of this.states) this.sendState(stateKey, stateValue, true)
     }, options?.fullSyncInterval ?? 10000);
+
+    this.relayDebug.isConnected.watch(v => {
+      if (v) {
+        this.ws.closeConnection()
+        for (const [_, stateValue] of this.states)
+          for (const [uuid, _] of stateValue.all)
+            if (uuid !== this.uuid) stateValue.disconnect(uuid)
+
+        this.ws.status.value = 'connected'
+
+        for (const [stateKey, stateValue] of this.states) this.relayDebug.sendState(stateKey, stateValue.value)
+      }
+      else {
+        for (const [_, stateValue] of this.states)
+          for (const [uuid, _] of stateValue.all)
+            if (uuid !== this.uuid) stateValue.disconnect(uuid)
+        this.ws.connect()
+      }
+    })
   }
 
   createState<T>(name: string, defaultValue: T): RelayState<T> {
@@ -197,6 +231,7 @@ export class WidgetsRelay {
       this.ws.send(JSON.stringify({ type: 'change', uuid: state.uuid, name, value: state.value } satisfies ChangeMessage))
     }
 
+    this.relayDebug.sendState(name, state.value)
     this.lastSendedStates.set(state, structuredClone(state.value))
   }
 

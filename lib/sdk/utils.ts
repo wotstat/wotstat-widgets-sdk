@@ -49,13 +49,17 @@ export class ReadonlyWatchableValue<T> {
 
   protected set value(value: T) {
     this.currentValue = value
-    this.subscribers.forEach(subscriber => subscriber(value))
+    this.trigger()
   }
 
   watch(fn: (value: T) => void, options?: { immediate?: boolean }) {
     if (options?.immediate) fn(this.currentValue)
     this.subscribers.add(fn)
     return () => this.subscribers.delete(fn)
+  }
+
+  protected trigger() {
+    this.subscribers.forEach(subscriber => subscriber(this.currentValue))
   }
 
   protected dispose() {
@@ -65,12 +69,20 @@ export class ReadonlyWatchableValue<T> {
 }
 
 export class WatchableValue<T> extends ReadonlyWatchableValue<T> {
-  set value(value: T) {
+  override set value(value: T) {
     super.value = value
+  }
+
+  override get value() {
+    return super.value
   }
 
   dispose() {
     super.dispose()
+  }
+
+  trigger() {
+    super.trigger()
   }
 
   get readonlyValue() {
@@ -139,11 +151,36 @@ export function useWebSocket(options: {
     websocket.send(data)
   }
 
+  function dispose() {
+    closeConnection()
+    websocket = null
+    status.dispose()
+  }
+
   connect()
 
   return {
     status,
+    connect,
     closeConnection,
-    send
+    send,
+    dispose
+  }
+}
+
+export class EventDispatcher<T> {
+  private listeners = new Set<(event: T) => void>()
+
+  addListener(listener: (event: T) => void) {
+    this.listeners.add(listener)
+    return () => this.listeners.delete(listener)
+  }
+
+  dispatch(event: T) {
+    this.listeners.forEach(listener => listener(event))
+  }
+
+  clear() {
+    this.listeners.clear()
   }
 }

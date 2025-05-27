@@ -72,9 +72,6 @@ export namespace MetaTags {
       }
     }
 
-    console.log(value);
-
-
     if (value === false || value === '0 0 0 0') removeMeta('insets')
     else setMeta('insets', value)
   }

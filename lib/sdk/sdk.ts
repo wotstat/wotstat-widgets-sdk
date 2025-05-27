@@ -5,6 +5,7 @@ import { WidgetsSdkData } from './dataTypes'
 import { setup as setupStyle } from "./style";
 import { DataProviderEmulator } from "./emulator";
 import { widgetCommands } from "./widgetCommands";
+import { SdkDebug } from "./debugUtils";
 
 export type SDKStatus = 'connecting' | 'connected'
 
@@ -31,6 +32,13 @@ export class SDK<T extends WidgetsSdkData> {
   private readonly onAnyChangeCallbacks = new Set<(path: string, value: any) => void>()
   private readonly onAnyTriggerCallbacks = new Set<(path: string, value: any) => void>()
   private readonly dataProxy = createDeepProxy<T>()
+
+  private readonly debug = new SdkDebug({
+    onMessage: msg => {
+      const event = new MessageEvent('message', { data: JSON.stringify(msg) })
+      this.onMessage(event)
+    }
+  })
 
   private port = 33800
   private host = 'localhost'
@@ -67,6 +75,11 @@ export class SDK<T extends WidgetsSdkData> {
       () => this.closeConnection(),
       () => { this.status = 'connecting' })
 
+    this.debug.isConnected.watch(v => {
+      if (v) this.closeConnection()
+      else this.reconnect()
+    })
+
     // @ts-ignore
     window.wotstatEmulator = emulator.api
   }
@@ -97,6 +110,7 @@ export class SDK<T extends WidgetsSdkData> {
       this.websocket.removeEventListener('message', this.onMessage)
       this.websocket.removeEventListener('close', this.onClose)
       this.websocket.close()
+      this.websocket = null
     }
   }
 
