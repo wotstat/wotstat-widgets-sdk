@@ -75,7 +75,7 @@ export class SDK<T extends WidgetsSdkData> {
       () => this.closeConnection(),
       () => { this.status = 'connecting' })
 
-    this.debug.isConnected.watch(v => {
+    this.debug.isEnabled.watch(v => {
       if (v) this.closeConnection()
       else this.reconnect()
     })

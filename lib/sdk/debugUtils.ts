@@ -10,8 +10,8 @@ const COMMANDS = {
   SETUP_DEBUG: 'SETUP_DEBUG',
   SETUP_CONNECTION: 'SETUP_CONNECTION',
   SETUP_DISCONNECTION: 'SETUP_DISCONNECTION',
-  CONNECT: 'CONNECT',
-  DISCONNECT: 'DISCONNECT',
+  ENABLE: 'ENABLE',
+  DISABLE: 'DISABLE',
   SETUP_STATE: 'SETUP_STATE',
   SET_VALUE: 'SET_VALUE',
   REMOVE_CLIENT: 'REMOVE_CLIENT',
@@ -32,15 +32,15 @@ type RemoteState = {
 }
 
 abstract class BaseDebug {
-  private enabled = new WatchableValue<boolean>(false)
   private connected = new WatchableValue<boolean>(false)
-
-  get isEnabled() {
-    return this.enabled.readonlyValue
-  }
+  private enabled = new WatchableValue<boolean>(false)
 
   get isConnected() {
     return this.connected.readonlyValue
+  }
+
+  get isEnabled() {
+    return this.enabled.readonlyValue
   }
 
   constructor(private key: string) {
@@ -55,10 +55,10 @@ abstract class BaseDebug {
     if (event.data.key !== this.key) return
 
     if ('command' in event.data.data) {
-      if (event.data.data.command === COMMANDS.SETUP_CONNECTION) this.enabled.value = true
-      if (event.data.data.command === COMMANDS.SETUP_DISCONNECTION) this.enabled.value = false
-      if (event.data.data.command === COMMANDS.CONNECT) this.connected.value = true
-      if (event.data.data.command === COMMANDS.DISCONNECT) this.connected.value = false
+      if (event.data.data.command === COMMANDS.SETUP_CONNECTION) this.connected.value = true
+      if (event.data.data.command === COMMANDS.SETUP_DISCONNECTION) this.connected.value = false
+      if (event.data.data.command === COMMANDS.ENABLE) this.enabled.value = true
+      if (event.data.data.command === COMMANDS.DISABLE) this.enabled.value = false
       this.processCommand(event.data.data.command, event.data.data)
     }
   }
@@ -76,15 +76,15 @@ abstract class BaseDebug {
 }
 
 abstract class BaseDebugConnection {
-  private enabled = new WatchableValue<boolean>(false)
   private connected = new WatchableValue<boolean>(false)
-
-  get isEnabled() {
-    return this.enabled.readonlyValue
-  }
+  private enabled = new WatchableValue<boolean>(false)
 
   get isConnected() {
     return this.connected.readonlyValue
+  }
+
+  get isEnabled() {
+    return this.enabled.readonlyValue
   }
 
   constructor(private frame: HTMLIFrameElement, private key: string) {
@@ -106,7 +106,7 @@ abstract class BaseDebugConnection {
     if ('command' in event.data.data) {
       if (event.data.data.command === COMMANDS.SETUP_DEBUG) {
         this.post({ command: COMMANDS.SETUP_CONNECTION })
-        this.enabled.value = true
+        this.connected.value = true
       }
 
       this.processCommand(event.data.data.command, event.data.data)
@@ -117,12 +117,12 @@ abstract class BaseDebugConnection {
     this.frame.contentWindow?.postMessage({ key: this.key, data }, "*")
   }
 
-  connect() {
-    this.post({ command: COMMANDS.CONNECT })
+  enable() {
+    this.post({ command: COMMANDS.ENABLE })
   }
 
-  disconnect() {
-    this.post({ command: COMMANDS.DISCONNECT })
+  disable() {
+    this.post({ command: COMMANDS.DISABLE })
   }
 
   abstract processCommand(command: string, data: any): void;
@@ -130,7 +130,7 @@ abstract class BaseDebugConnection {
   dispose() {
     this.post({ command: COMMANDS.SETUP_DISCONNECTION })
     window.removeEventListener('message', this.onMessageFromWidget)
-    this.enabled.dispose()
+    this.connected.dispose()
   }
 
 }
@@ -204,8 +204,8 @@ export class SdkDebugConnection extends BaseDebugConnection {
     super(frame, SDK_DEBUG_KEY)
   }
 
-  connect() {
-    super.connect()
+  enable() {
+    super.enable()
   }
 
   processCommand(command: string, data: any): void { }
@@ -236,13 +236,9 @@ export class SdkDebug extends BaseDebug {
     super(SDK_DEBUG_KEY)
   }
 
-  sendMessage(message: InitMessage | ChangeStateMessage | TriggerMessage) {
-    this.callbacks.onMessage(message);
-  }
-
   processCommand(command: string, data: any) {
     if (command === COMMANDS.SEND_MESSAGE) {
-      this.sendMessage(data.message);
+      this.callbacks.onMessage(data.message);
     }
   }
 }

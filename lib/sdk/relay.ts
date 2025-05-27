@@ -173,7 +173,7 @@ export class WidgetsRelay {
       for (const [stateKey, stateValue] of this.states) this.sendState(stateKey, stateValue, true)
     }, options?.fullSyncInterval ?? 10000);
 
-    this.relayDebug.isConnected.watch(v => {
+    this.relayDebug.isEnabled.watch(v => {
       if (v) {
         this.ws.closeConnection()
         for (const [_, stateValue] of this.states)

@@ -34,7 +34,7 @@ export class WidgetsRemote {
     channel?: string
   }) {
 
-    this.remoteDebug.isEnabled.watch(v => {
+    this.remoteDebug.isConnected.watch(v => {
       if (!v) return
       this.ws.closeConnection()
       this.ws.status.value = 'connected'
