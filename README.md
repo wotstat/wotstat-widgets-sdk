@@ -28,6 +28,100 @@ npm i wotstat-widgets-sdk
 
 ## Использование
 
+С помощью [widgets.wotstat.info/remote-control](https://widgets.wotstat.info/remote-control) можно тестировать виджеты. Поддерживается эмуляция data-provider и relay-server.
+
+## WidgetsRelay
+Используется для создания pear-to-pear взаимодействия между виджетами. Позволяет определить состояние, которое будет синхронизироваться между всеми виджетами, использующими этот `WidgetsRelay`. Состояния не хранятся на сервере, а передаются напрямую между виджетами. 
+
+
+```js
+import { WidgetsRelay } from 'wotstat-widgets-sdk'
+
+const relay = new WidgetsRelay()
+
+const simple = relay.createState('simple', 0)
+const complex = relay.createState('complex', { foo: { bar: 0, 'long/deep': 0 }, baz: 0 })
+```
+
+Для установки значения состояния используется обычная запись в свойство `value`, при изменении комплексных значений, необходимо вызвать метод `trigger()`, чтоб сообщить системе, что значение изменилось.
+
+```js
+
+// Слежение за изменением, вызывается и при изменении своего значения и при синхронизации
+simple.watch(v => {
+  console.log('Simple value changed:', v)
+  console.log('Current value:', simple.value)
+  console.log('All users values:', simple.all)
+}, { immediate: true })
+
+
+// Изменение простого состояния
+simple.value = 5
+
+// Изменение комплексного состояния
+counter.value.baz = 10
+counter.trigger()
+```
+
+Синхронизация производится внутри канала по ключу состояния, ключ канала задаётся в URL, например: `?channel-key=demo` или в параметрах `new WidgetsRelay({ channel: 'demo' })`.
+
+## WidgetsRemote
+Используется для создания удалённых серверных состояний. Можно использовать отдельно от взаимодействия с игрой для веб виджетов общего назначения. Состояния можно редактировать через [widgets.wotstat.info/remote-control](https://widgets.wotstat.info/remote-control). Состояния хранятся на сервере и синхронизируются со всеми клиентами.
+
+Для обеспечения безопасности, запись данных осуществляется с помощью произвольного ключа, а чтение данных осуществляется по хешу от этого ключа. На клиент хеш по умолчанию берётся из URL, например: `?remote-key=demo` или из параметров `new WidgetsRemote({ channel: 'demo' })`.
+
+Состояния определяются с помощью метода `defineState<T>(key: string, defaultValue: T)`.
+
+Поддерживается пять типов состояний:
+- `number` - число
+- `string` - строка
+- `color` - цвет (формат `#RRGGBB`)
+- `boolean` - логическое значение
+- `select` - выбор из списка (варианты задаются в виде массива)
+
+Для удобства редактирования, ключи могут быть разделены на группы с помощью символа `/`, например: `simple/number`, `helper/query`. В этом случае, в интерфейсе удалённого управления будет создана иерархия состояний. Кроме того, можно указать элемент, к которому будет привязано состояние с помощью опционального параметра `element`, который может быть элементом, селектором, либо функцией, возвращающей элемент.
+
+```js
+import { WidgetsRemote } from 'wotstat-widgets-sdk'
+
+const remote = new WidgetsRemote()
+
+const number = remote.defineState('simple/number', 0)
+const string = remote.defineState('simple/string', 'default')
+const color = remote.defineState('simple/color', '#4c8cff', { type: 'color' })
+const boolean = remote.defineState('simple/boolean', false)
+const select = remote.defineState('simple/select', 'foo', {
+  type: {
+    type: 'select',
+    variants: ['foo', 'bar', 'baz']
+  }
+})
+
+const helperQuery = remote.defineState('helper/query', 0, { element: '#bbox' })
+const helperElement = remote.defineState('helper/element', 0, { element: window.bbox })
+const helperGetter = remote.defineState('helper/getter', 0, { element: () => window.bbox })
+remote.defineElementHelper('simple', '#simple-states')
+
+```
+
+Для слежения за состоянием, можно использовать метод `watch`. Опциональный параметр `{ immediate: true }` позволяет сразу получить текущее значение состояния в момент подписки.
+
+```js
+// Подписка на изменение состояния
+const unwatch = number.watch(v => {
+ console.log('simple/number changed to', v)
+}, { immediate: true })
+
+// Получение текущего значения состояния
+console.log('Current value of simple/number:', number.value)
+
+// Отписка от изменения состояния
+unwatch()
+```
+
+## WidgetSDK
+Используется для связи с модом `wotstat-widgets` и получения данных из игр World of Tanks и Мир Танков.
+
 ```js
 import { WidgetSDK } from 'wotstat-widgets-sdk'
 
