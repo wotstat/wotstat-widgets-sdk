@@ -67,6 +67,13 @@ export class WidgetsRemote {
     }
   }
 
+  /**
+   * Define a helper element for remote debugging.
+   */
+  defineElementHelper(key: string, element: HTMLElement | (() => HTMLElement) | string) {
+    this.remoteDebug.defineRectHelper(key, element)
+  }
+
   defineState<T extends string | number | boolean>(key: string, defaultValue: T, meta?: {
     type?: RemoteStateType
     element?: HTMLElement | (() => HTMLElement) | string
@@ -84,7 +91,7 @@ export class WidgetsRemote {
       if (typeof defaultValue === 'boolean') return 'boolean'
       return 'string'
     }
-    this.remoteDebug.defineState(key, defaultValue, remoteType())
+    this.remoteDebug.defineState(key, defaultValue, remoteType(), meta?.element)
 
     return state
   }

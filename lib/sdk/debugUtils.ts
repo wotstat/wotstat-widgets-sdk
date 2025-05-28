@@ -1,5 +1,6 @@
 import { WatchableValue } from "./utils";
 import { ChangeStateMessage, InitMessage, TriggerMessage } from "./types";
+import { watchElementBounding } from "../utils/watchElementBounding";
 
 const REMOTE_DEBUG_KEY = 'wotstat-widgets-debug-remote'
 const SDK_DEBUG_KEY = 'wotstat-widgets-debug-sdk'
@@ -137,7 +138,8 @@ abstract class BaseDebugConnection {
 
 export class RemoteDebugConnection extends BaseDebugConnection {
 
-  private states = new WatchableValue(new Map<string, RemoteState>())
+  private readonly states = new WatchableValue(new Map<string, RemoteState>())
+  private readonly bbox = new WatchableValue(new Map<string, { width: number, height: number, x: number, y: number }>())
 
   constructor(frame: HTMLIFrameElement) {
     super(frame, REMOTE_DEBUG_KEY)
@@ -145,6 +147,10 @@ export class RemoteDebugConnection extends BaseDebugConnection {
 
   get registeredStates() {
     return this.states.readonlyValue
+  }
+
+  get boundingBoxes() {
+    return this.bbox.readonlyValue
   }
 
   dispose() {
@@ -166,19 +172,51 @@ export class RemoteDebugConnection extends BaseDebugConnection {
         this.states.value.set(data.key, data.meta)
         this.states.trigger()
         break
+      case COMMANDS.BOUNDING_FOR_STATE:
+        const { key, bbox } = data;
+        this.bbox.value.set(key, bbox);
+        this.bbox.trigger();
+        break;
     }
   }
 }
 
 export class RemoteDebug extends BaseDebug {
 
+  private readonly bboxWatchers = new Map<string, ReturnType<typeof watchElementBounding>>()
+
   constructor(private readonly options: {
     onSetState: (state: Record<string, any>) => void
   }) {
     super(REMOTE_DEBUG_KEY)
+
+    this.isConnected.watch(connected => {
+      for (const [key, v] of this.bboxWatchers) connected ? v.resume() : v.pause();
+    })
   }
 
-  defineState(key: string, value: any, type: RemoteStateType) {
+  private postBbox(key: string, bbox: { width: number, height: number, x: number, y: number }) {
+    this.post({
+      command: COMMANDS.BOUNDING_FOR_STATE,
+      key,
+      bbox
+    })
+  }
+
+  defineRectHelper(key: string, element: HTMLElement | (() => HTMLElement | undefined) | string) {
+    this.bboxWatchers.get(key)?.disconnect()
+
+    const watcher = watchElementBounding(element, (bbox) => {
+      this.postBbox(key, bbox);
+    })
+
+    if (!this.isConnected.value) watcher.pause()
+
+    this.bboxWatchers.set(key, watcher)
+  }
+
+  defineState(key: string, value: any, type: RemoteStateType, element?: HTMLElement | (() => HTMLElement | undefined) | string) {
+    if (element) this.defineRectHelper(key, element)
     this.post({
       command: COMMANDS.SETUP_STATE,
       key,
