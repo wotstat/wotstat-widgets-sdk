@@ -4,6 +4,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 const REMOTE_URL = 'wss://widgets-remote.wotstat.info'
 
+type ElementDefinition = HTMLElement | (() => HTMLElement) | string
+
+function getElement(elementDef: ElementDefinition): HTMLElement | undefined {
+  if (typeof elementDef === 'string') return document.querySelector<HTMLElement>(elementDef) ?? undefined;
+  if (typeof elementDef === 'function') return elementDef() ?? undefined;
+  return elementDef;
+}
+
 export class WidgetsRemote {
   private ws: ReturnType<typeof useWebSocket>
   private uuid: string = uuidv4()
@@ -70,19 +78,44 @@ export class WidgetsRemote {
   /**
    * Define a helper element for remote debugging.
    */
-  defineElementHelper(key: string, element: HTMLElement | (() => HTMLElement) | string) {
+  defineElementHelper(key: string, element: ElementDefinition) {
     this.remoteDebug.defineRectHelper(key, element)
   }
 
+  /**
+   * Defines a remote-controllable state variable that can be synchronized with the remote debug interface.
+   *
+   * @param {string} key - Unique key for the state variable.
+   * @param {Object} [meta] - Optional metadata for the state.
+   * @param {RemoteStateType} [meta.type] - Explicit type of the state (overrides type inference).
+   * @param {ElementDefinition} [meta.element] - Associated element for UI representation.
+   * @param {ElementDefinition} [meta.elementHelper] - Helper element for debugging or visualization.
+   */
   defineState<T extends string | number | boolean>(key: string, defaultValue: T, meta?: {
     type?: RemoteStateType
-    element?: HTMLElement | (() => HTMLElement) | string
+    element?: ElementDefinition,
+    elementHelper?: ElementDefinition
   }) {
     if (this.states.has(key)) return this.states.get(key)!.readonlyValue as ReadonlyWatchableValue<T>
 
     const state = new WatchableValue<T>(this.lastState.value.get(key) as T ?? defaultValue, () => this.states.delete(key))
     this.states.set(key, state)
 
+    if (meta?.element) {
+      state.watch(value => {
+        const element = getElement(meta.element!)
+        if (!element) return;
+        try {
+          element.setAttribute(`remote-${key.replaceAll('/', '-')}`, String(value))
+          element.style.setProperty(`--remote-${key.replaceAll('/', '-')}`, String(value))
+        } catch (error) {
+          console.warn(`Error setting remote value for ${key}:`, error);
+        }
+        if (meta.type !== 'color') {
+          element.innerText = String(value)
+        }
+      }, { immediate: true })
+    }
 
     const remoteType = () => {
       if (meta?.type) return meta.type
@@ -91,7 +124,7 @@ export class WidgetsRemote {
       if (typeof defaultValue === 'boolean') return 'boolean'
       return 'string'
     }
-    this.remoteDebug.defineState(key, defaultValue, remoteType(), meta?.element)
+    this.remoteDebug.defineState(key, defaultValue, remoteType(), meta?.elementHelper ?? meta?.element)
 
     return state
   }

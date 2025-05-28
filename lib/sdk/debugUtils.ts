@@ -208,7 +208,7 @@ export class RemoteDebug extends BaseDebug {
 
     const watcher = watchElementBounding(element, (bbox) => {
       this.postBbox(key, bbox);
-    })
+    }, { debounce: 100 })
 
     if (!this.isConnected.value) watcher.pause()
 
