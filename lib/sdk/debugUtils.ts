@@ -1,6 +1,5 @@
 import { WatchableValue } from "./utils";
 import { ChangeStateMessage, InitMessage, TriggerMessage } from "./types";
-import { watchElementBounding } from "../utils/watchElementBounding";
 
 const REMOTE_DEBUG_KEY = 'wotstat-widgets-debug-remote'
 const SDK_DEBUG_KEY = 'wotstat-widgets-debug-sdk'
@@ -181,9 +180,40 @@ export class RemoteDebugConnection extends BaseDebugConnection {
   }
 }
 
+class Bbox {
+  constructor(
+    public width: number,
+    public height: number,
+    public x: number,
+    public y: number
+  ) { }
+
+  isEqual(other: Bbox): boolean {
+    return this.width === other.width &&
+      this.height === other.height &&
+      this.x === other.x &&
+      this.y === other.y;
+  }
+}
+
+type ElementDef = HTMLElement | (() => HTMLElement | undefined) | string;
+
+function getElementGetter(element: ElementDef) {
+  if (typeof element === 'string') {
+    return () => document.querySelector<HTMLElement>(element) ?? undefined;
+  }
+  if (typeof element === 'function') {
+    return () => element() ?? undefined;
+  }
+  return () => element as HTMLElement;
+}
+
 export class RemoteDebug extends BaseDebug {
 
-  private readonly bboxWatchers = new Map<string, ReturnType<typeof watchElementBounding>>()
+  private readonly lastBBox = new Map<string, Bbox>()
+  private readonly bboxTargets = new Map<string, ReturnType<typeof getElementGetter>>()
+
+  private animationCancel: ReturnType<typeof requestAnimationFrame> | null = null;
 
   constructor(private readonly options: {
     onSetState: (state: Record<string, any>) => void
@@ -191,11 +221,12 @@ export class RemoteDebug extends BaseDebug {
     super(REMOTE_DEBUG_KEY)
 
     this.isConnected.watch(connected => {
-      for (const [key, v] of this.bboxWatchers) connected ? v.resume() : v.pause();
-    })
+      if (connected) this.animationCancel = requestAnimationFrame(() => this.bboxChecker())
+      else if (this.animationCancel) cancelAnimationFrame(this.animationCancel);
+    }, { immediate: true });
   }
 
-  private postBbox(key: string, bbox: { width: number, height: number, x: number, y: number }) {
+  private postBbox(key: string, bbox: { width: number, height: number, x: number, y: number } | undefined) {
     this.post({
       command: COMMANDS.BOUNDING_FOR_STATE,
       key,
@@ -203,19 +234,37 @@ export class RemoteDebug extends BaseDebug {
     })
   }
 
-  defineRectHelper(key: string, element: HTMLElement | (() => HTMLElement | undefined) | string) {
-    this.bboxWatchers.get(key)?.disconnect()
+  private bboxChecker() {
+    this.animationCancel = requestAnimationFrame(() => this.bboxChecker())
 
-    const watcher = watchElementBounding(element, (bbox) => {
-      this.postBbox(key, bbox);
-    }, { debounce: 100 })
+    for (const [key, getter] of this.bboxTargets) {
+      const element = getter();
+      if (!element) {
+        this.lastBBox.delete(key);
+        this.postBbox(key, undefined);
+        continue;
+      }
 
-    if (!this.isConnected.value) watcher.pause()
-
-    this.bboxWatchers.set(key, watcher)
+      const rect = element.getBoundingClientRect();
+      const bbox = new Bbox(rect.width, rect.height, rect.left + window.scrollX, rect.top + window.scrollY);
+      const last = this.lastBBox.get(key);
+      if (!last || !last.isEqual(bbox)) {
+        this.lastBBox.set(key, bbox);
+        this.postBbox(key, {
+          width: bbox.width,
+          height: bbox.height,
+          x: bbox.x,
+          y: bbox.y
+        });
+      }
+    }
   }
 
-  defineState(key: string, value: any, type: RemoteStateType, element?: HTMLElement | (() => HTMLElement | undefined) | string) {
+  defineRectHelper(key: string, element: ElementDef) {
+    this.bboxTargets.set(key, getElementGetter(element));
+  }
+
+  defineState(key: string, value: any, type: RemoteStateType, element?: ElementDef) {
     if (element) this.defineRectHelper(key, element)
     this.post({
       command: COMMANDS.SETUP_STATE,
@@ -234,6 +283,11 @@ export class RemoteDebug extends BaseDebug {
         this.options.onSetState(data.state)
         break
     }
+  }
+
+  override dispose(): void {
+    super.dispose();
+    if (this.animationCancel) cancelAnimationFrame(this.animationCancel);
   }
 }
 
