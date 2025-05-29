@@ -50,6 +50,9 @@ export function injectStyles() {
 }
 
 export function setup() {
+  // @ts-ignore
+  if (window.wotstatStyleInjected) { return } else { window.wotstatStyleInjected = true }
+
   injectStyles()
   setupHistoryChanged()
 
