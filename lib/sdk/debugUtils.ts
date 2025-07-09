@@ -23,7 +23,7 @@ const COMMANDS = {
 
 export type RemoteStateType = 'string' | 'number' | 'boolean' | 'color' | {
   type: 'select',
-  variants: string[]
+  variants: string[] | { value: string, label: string }[]
 }
 
 type RemoteState = {
