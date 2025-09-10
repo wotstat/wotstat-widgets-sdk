@@ -198,6 +198,15 @@ export interface WidgetsSdkData {
     } | null>
   }
 
+  moeInfo: {
+    isAvailable: State<boolean>
+    current: State<{
+      vehicleTag: string
+      battleCount: number
+      damageBetterThanNPercent: number[]
+    } | null>
+  }
+
   extensions: WidgetsSdkExtensions
   registeredExtensions: State<string[]>
 }
