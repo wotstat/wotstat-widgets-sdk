@@ -192,6 +192,7 @@ export interface WidgetsSdkData {
 
   dossier: {
     current: State<{
+      vehicleTag?: string
       movingAvgDamage: number
       damageRating: number
       battlesCount: number
