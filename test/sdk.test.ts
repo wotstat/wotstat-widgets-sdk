@@ -186,21 +186,22 @@ describe('Init', () => {
     sendInit(wss)
 
     await vi.waitUntil(() => fn.mock.calls.length === 1)
-    expect(fn).toHaveBeenCalledWith('connected')
+    expect(fn).lastCalledWith('connected')
 
     wss.clients.forEach(client => client.close())
     wss.close()
 
-    await vi.waitUntil(() => fn.mock.calls.length === 2)
-    expect(fn).toHaveBeenCalledWith('connecting')
+    fn.mockClear()
+    await vi.waitUntil(() => fn.mock.calls.length > 2)
+    expect(fn).toBeCalledWith('disconnected')
+    expect(fn).toBeCalledWith('connecting')
 
     const wss2 = new WebSocketServer({ port })
     await vi.waitUntil(() => wss2.clients.size === 1)
     sendInit(wss2)
 
     await vi.waitUntil(() => fn.mock.lastCall?.[0] === 'connected')
-
-    expect(fn).toHaveBeenCalledTimes(3)
+    expect(fn).lastCalledWith('connected')
   })
 
 })

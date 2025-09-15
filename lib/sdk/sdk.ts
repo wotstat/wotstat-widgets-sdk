@@ -73,7 +73,7 @@ export class SDK<T extends WidgetsSdkData> {
         this.onMessage(event)
       },
       () => this.closeConnection(),
-      () => { this.status = 'connecting' })
+      () => { this.status = 'disconnected' })
 
     this.debug.isEnabled.watch(v => {
       this.closeConnection()
@@ -137,6 +137,7 @@ export class SDK<T extends WidgetsSdkData> {
   }
 
   private onClose = (event: CloseEvent) => {
+    this.status = 'disconnected'
     this.reconnect()
   }
 
