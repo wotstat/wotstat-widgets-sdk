@@ -18,6 +18,7 @@ const COMMANDS = {
   GET_BOUNDING_FOR_STATE: 'GET_BOUNDING_FOR_STATE',
   BOUNDING_FOR_STATE: 'BOUNDING_FOR_STATE',
   SEND_MESSAGE: 'SEND_MESSAGE',
+  PREVENT_GAME_CONNECTION: 'PREVENT_GAME_CONNECTION'
 } as const
 
 
@@ -118,10 +119,12 @@ abstract class BaseDebugConnection {
   }
 
   enable() {
+    this.enabled.value = true
     this.post({ command: COMMANDS.ENABLE })
   }
 
   disable() {
+    this.enabled.value = false
     this.post({ command: COMMANDS.DISABLE })
   }
 
@@ -292,12 +295,10 @@ export class RemoteDebug extends BaseDebug {
 }
 
 export class SdkDebugConnection extends BaseDebugConnection {
+  private gameConnectionPrevented = new WatchableValue<boolean>(false);
+
   constructor(frame: HTMLIFrameElement) {
     super(frame, SDK_DEBUG_KEY)
-  }
-
-  enable() {
-    super.enable()
   }
 
   processCommand(command: string, data: any): void { }
@@ -319,18 +320,31 @@ export class SdkDebugConnection extends BaseDebugConnection {
     this.sendMessage({ type: 'state', path, value });
   }
 
+  sendPreventGameConnection(prevent: boolean) {
+    this.gameConnectionPrevented.value = prevent;
+    this.post({ command: COMMANDS.PREVENT_GAME_CONNECTION, prevent: prevent });
+  }
+
 }
 
 export class SdkDebug extends BaseDebug {
+  private gameConnectionPrevented = new WatchableValue<boolean>(false);
+
+  get isGameConnectionPrevented() {
+    return this.gameConnectionPrevented.readonlyValue;
+  }
+
   constructor(private callbacks: {
-    onMessage: (message: any) => void
+    onMessage: (message: any) => void,
   }) {
     super(SDK_DEBUG_KEY)
   }
 
   processCommand(command: string, data: any) {
     if (command === COMMANDS.SEND_MESSAGE) {
-      this.callbacks.onMessage(data.message);
+      if (this.isEnabled.value) this.callbacks.onMessage(data.message);
+    } else if (command === COMMANDS.PREVENT_GAME_CONNECTION) {
+      this.gameConnectionPrevented.value = data.prevent;
     }
   }
 }

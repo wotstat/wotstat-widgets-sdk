@@ -7,7 +7,7 @@ import { DataProviderEmulator } from "./emulator";
 import { widgetCommands } from "./widgetCommands";
 import { SdkDebug } from "./debugUtils";
 
-export type SDKStatus = 'connecting' | 'connected'
+export type SDKStatus = 'connecting' | 'connected' | 'disconnected'
 
 export type Options = Partial<{
   connect: boolean
@@ -27,7 +27,7 @@ function tryParseJson(message: string): unknown {
 
 export class SDK<T extends WidgetsSdkData> {
   private websocket: WebSocket | null = null
-  private _status: SDKStatus = 'connecting'
+  private _status: SDKStatus = 'disconnected'
   private readonly onStatusChangeCallbacks = new Set<(status: SDKStatus) => void>()
   private readonly onAnyChangeCallbacks = new Set<(path: string, value: any) => void>()
   private readonly onAnyTriggerCallbacks = new Set<(path: string, value: any) => void>()
@@ -76,8 +76,14 @@ export class SDK<T extends WidgetsSdkData> {
       () => { this.status = 'connecting' })
 
     this.debug.isEnabled.watch(v => {
-      if (v) this.closeConnection()
-      else this.reconnect()
+      this.closeConnection()
+      if (!v && !this.debug.isGameConnectionPrevented.value) this.reconnect()
+    })
+
+    this.debug.isGameConnectionPrevented.watch(v => {
+      if (this.debug.isEnabled.value) return
+      this.closeConnection()
+      if (!v) this.reconnect()
     })
 
     // @ts-ignore
@@ -112,6 +118,7 @@ export class SDK<T extends WidgetsSdkData> {
       this.websocket.close()
       this.websocket = null
     }
+    this.status = 'disconnected'
   }
 
   private reconnect() {
