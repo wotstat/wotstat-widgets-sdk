@@ -188,7 +188,19 @@ export function parseBattleResult(result: unknown) {
   const details = Object.entries(personal)
     .filter(([key, value]) => key !== 'avatar')
     .map(([key, value]) => value)
-    .map(t => Object.values(t.details).map((t: any) => ({ ...t, crits: critsParserGenerator(t.crits) })) as PersonalDamageDetails[])
+    .map(t => Object.entries(t.details).map(([key, t]: [string, any]) => {
+      const parts = key.match(/\((\d+), (\d+)\)/)
+      const vehId = parts ? Number.parseInt(parts[1]) : null;
+      const vehIdx = parts ? Number.parseInt(parts[2]) : null;
+
+      const vehicle = vehId !== null && vehIdx !== null && vehicles[vehId] ? vehicles[vehId][vehIdx] : null;
+
+      return {
+        ...t,
+        crits: critsParserGenerator(t.crits),
+        vehicle
+      } as PersonalDamageDetails[]
+    }))
     .reduce((acc, value) => acc.concat(value), [])
 
   const comp7 = {
