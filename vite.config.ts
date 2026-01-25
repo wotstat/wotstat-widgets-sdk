@@ -14,13 +14,6 @@ export default defineConfig({
     sourcemap: true,
     minify: 'esbuild',
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern'
-      }
-    }
-  },
   plugins: [
     dts({ rollupTypes: true })
   ],
