@@ -8,3 +8,4 @@ export { injectStyles as injectStylesheet, setup as setupStyles } from "./sdk/st
 export { WidgetsRelay, type RelayState } from "./sdk/relay"
 export { WidgetsRemote } from "./sdk/remote"
 export { RemoteDebugConnection, SdkDebugConnection, RelayDebugConnection } from "./sdk/debugUtils"
+export { parseBattleResult } from './sdk/sharedUtils/battleResultParser'
