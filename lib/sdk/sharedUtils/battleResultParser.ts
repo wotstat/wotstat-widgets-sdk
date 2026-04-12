@@ -182,7 +182,8 @@ export function parseBattleResult(result: unknown) {
 
   const common = get<object>(result, 'common')
   const winnerTeam = get<number>(common, 'winnerTeam')
-  const resultType = winnerTeam == 0 ? 'draw' : winnerTeam == get<number>(avatar, 'team') ? 'win' : 'lose'
+  const playerTeam = get<number>(avatar, 'team')
+  const resultType = winnerTeam == 0 ? 'draw' : winnerTeam == playerTeam ? 'win' : 'lose'
 
 
   const details = Object.entries(personal)
@@ -220,7 +221,7 @@ export function parseBattleResult(result: unknown) {
   }
 
   const platoon = prebattleID == 0 ? [personalVehicle] :
-    playerVehiclePairs.filter(t => t.player != 'bot' && t.player.prebattleID == prebattleID)
+    playerVehiclePairs.filter(t => t.player != 'bot' && t.player.prebattleID == prebattleID && t.player.team == playerTeam)
 
   return {
     arenaUniqueID,
